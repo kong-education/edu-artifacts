@@ -1,0 +1,676 @@
+_format_version: "3.0"
+consumer_groups:
+- name: tier-1
+  tags:
+  - scenario1
+- name: tier-2
+  tags:
+  - scenario1
+consumers:
+- groups:
+  - name: tier-1
+    tags:
+    - scenario1
+  keyauth_credentials:
+  - key: a1
+    tags:
+    - scenario1
+  tags:
+  - scenario1
+  username: C_A1
+- groups:
+  - name: tier-2
+    tags:
+    - scenario1
+  keyauth_credentials:
+  - key: a2
+    tags:
+    - scenario1
+  tags:
+  - scenario1
+  username: C_A2
+plugins:
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 2
+    lock_dictionary_name: kong_locks
+    namespace: loOZE0YtKDwujDWThZQUKx3Xv2iZwzcI
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-1
+  enabled: true
+  instance_name: Tier_1-API_A1
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Catalog
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 10
+    lock_dictionary_name: kong_locks
+    namespace: NPrQPUzg0epnJi1uoHaZyxf039u0w0kf
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-2
+  enabled: true
+  instance_name: Tier_2-API_A1
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Catalog
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 4
+    lock_dictionary_name: kong_locks
+    namespace: 0LIh3n3YsqQ1cu6YVqivzdMn0aq9268r
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-1
+  enabled: true
+  instance_name: Tier_1-API_A3
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Personal-Info
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 14
+    lock_dictionary_name: kong_locks
+    namespace: 1tLmCZSxnI9dA1GEOXjkmD1jAvo275QQ
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-2
+  enabled: true
+  instance_name: Tier_2-API_A3
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Personal-Info
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 3
+    lock_dictionary_name: kong_locks
+    namespace: OOvt8W6Wdq6ECW8W9fVSxDodN4HTuGgM
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-1
+  enabled: true
+  instance_name: Tier_1-API_A2
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Preferences
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 12
+    lock_dictionary_name: kong_locks
+    namespace: O5prHxzMXfiyjSS7iaUcK4T69eyEvW8P
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-2
+  enabled: true
+  instance_name: Tier_2-API_A2
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Preferences
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 10
+    lock_dictionary_name: kong_locks
+    namespace: XxKYFyFaGQIv5ZcJ3X1JIirtp6sLC5Ck
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: fixed
+  consumer_group: tier-1
+  enabled: true
+  instance_name: Tier_1-default
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Rewards
+  tags:
+  - scenario1
+- config:
+    compound_identifier: null
+    consumer_groups: null
+    dictionary_name: kong_rate_limiting_counters
+    disable_penalty: false
+    enforce_consumer_groups: false
+    error_code: 429
+    error_message: API rate limit exceeded
+    header_name: null
+    hide_client_headers: false
+    identifier: consumer
+    limit:
+    - 5
+    lock_dictionary_name: kong_locks
+    namespace: GEAHdFFrzUX95aid7xUeP4I8hbwWbxB0
+    path: null
+    redis:
+      cluster_addresses: null
+      cluster_max_redirections: 5
+      cluster_nodes: null
+      connect_timeout: 2000
+      connection_is_proxied: false
+      database: 0
+      host: 127.0.0.1
+      keepalive_backlog: null
+      keepalive_pool_size: 256
+      password: null
+      port: 6379
+      read_timeout: 2000
+      redis_proxy_type: null
+      send_timeout: 2000
+      sentinel_addresses: null
+      sentinel_master: null
+      sentinel_nodes: null
+      sentinel_password: null
+      sentinel_role: null
+      sentinel_username: null
+      server_name: null
+      ssl: false
+      ssl_verify: false
+      timeout: 2000
+      username: null
+    retry_after_jitter_max: 0
+    strategy: local
+    sync_rate: -1
+    window_size:
+    - 60
+    window_type: sliding
+  consumer_group: tier-2
+  enabled: true
+  instance_name: Tier_2-Default
+  name: rate-limiting-advanced
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+  route: Rewards
+  tags:
+  - scenario1
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.konghq.com
+  name: Product-A
+  path: /anything
+  plugins:
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      realm: null
+      run_on_preflight: true
+    enabled: true
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Catalog
+    path_handling: v0
+    paths:
+    - /v1/catalog
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - API_A1
+    - scenario1
+  - https_redirect_status_code: 426
+    name: Personal-Info
+    path_handling: v0
+    paths:
+    - /v1/personal/info
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - API_A3
+    - scenario1
+  - https_redirect_status_code: 426
+    name: Preferences
+    path_handling: v0
+    paths:
+    - /v1/preferences
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - API_A2
+    - scenario1
+  - https_redirect_status_code: 426
+    name: Rewards
+    path_handling: v0
+    paths:
+    - /v1/rewards
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - API_A4
+    - scenario1
+  tags:
+  - scenario1
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.konghq.com
+  name: RLA-Example
+  path: /anything
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: rla-example
+    path_handling: v0
+    paths:
+    - /rla
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.konghq.com
+  name: Token-Bucket-Example
+  path: /anything
+  plugins:
+  - config:
+      burst_refresh: 1
+      burst_size: 10
+      fault_tolerant: true
+      hide_client_headers: false
+      interval: 5000
+      limit_by: consumer
+      max_wait_time: 9999
+      redis_database: 0
+      redis_host: redis
+      redis_password: null
+      redis_port: 6379
+      redis_timeout: 2000
+    enabled: true
+    name: request-throttling
+    protocols:
+    - http
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Token-Bucket-Example
+    path_handling: v0
+    paths:
+    - /token-bucket
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

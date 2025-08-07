@@ -1,0 +1,225 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-mesh-demo
+  namespace: kong-mesh-demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-master
+  namespace: kong-mesh-demo
+  labels:
+    app: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: master
+        image: kvn0218/postgres:latest
+        env:
+        - name: POSTGRES_USER
+          value: kumademo
+        - name: POSTGRES_PASSWORD
+          value: kumademo
+        - name: POSTGRES_DB
+          value: kumademo
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 150m
+            memory: 256Mi
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: kong-mesh-demo
+  labels:
+    app: postgres
+spec:
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master
+  namespace: kong-mesh-demo
+  labels:
+    app: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: kvn0218/kuma-redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 150m
+            memory: 256Mi
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: kong-mesh-demo
+  labels:
+    app: redis
+    role: master
+    tier: backend
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: redis
+    role: master
+    tier: backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-mesh-demo-backend
+  namespace: kong-mesh-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-mesh-demo-backend
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: kong-mesh-demo-backend
+        env: prod
+    spec:
+      containers:
+      - image: kvn0218/kuma-demo-be:latest
+        name: kong-mesh-be
+        env:
+        - name: POSTGRES_HOST
+          value: postgres
+        - name: SPECIAL_OFFER
+          value: "false"
+        - name: REDIS_HOST
+          value: redis
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: kong-mesh-demo
+  annotations:
+    3001.service.kuma.io/protocol: "http"
+spec:
+  selector:
+    app: kong-mesh-demo-backend
+  ports:
+  - name: api
+    port: 3001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-mesh-demo-frontend
+  namespace: kong-mesh-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-mesh-demo-frontend
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: kong-mesh-demo-frontend
+        env: prod
+    spec:
+      containers:
+      - name: kong-mesh-fe
+        image: kvn0218/kuma-demo-fe:latest
+        args: ["-P", "http://backend:3001"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "128Mi"        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: kong-mesh-demo
+  annotations:
+    8080.service.kuma.io/protocol: "http"
+    ingress.kubernetes.io/service-upstream: "true"
+spec:
+  ports:
+  - port: 8088
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: kong-mesh-demo-frontend
+    env: prod
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portend
+  namespace: kong-mesh-demo
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 31112
+    protocol: TCP
+  selector:
+    app: kong-mesh-demo-frontend
+    env: prod
+  type: NodePort

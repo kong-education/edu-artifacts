@@ -1,0 +1,347 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: ${{ env "DECK_GATEWAY_NAME" }}
+consumer_groups:
+- name: premium_consumers
+  plugins:
+  - config:
+      consumer_groups: null
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      enforce_consumer_groups: false
+      error_code: 429
+      error_message: API rate limit exceeded
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      limit:
+      - 100
+      namespace: YA7ndLpsxdf052T4B4A18P4Q2I55oA8j
+      path: null
+      redis:
+        cluster_addresses: null
+        connect_timeout: null
+        database: 0
+        host: null
+        keepalive_backlog: null
+        keepalive_pool_size: 30
+        password: null
+        port: null
+        read_timeout: null
+        send_timeout: null
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      window_size:
+      - 60
+      window_type: sliding
+    name: rate-limiting-advanced
+- name: standard_consumers
+  plugins:
+  - config:
+      consumer_groups: null
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      enforce_consumer_groups: false
+      error_code: 429
+      error_message: API rate limit exceeded
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      limit:
+      - 30
+      namespace: fu4PU7XHACFLOkxXKUaxFdZEJSD5NMkD
+      path: null
+      redis:
+        cluster_addresses: null
+        connect_timeout: null
+        database: 0
+        host: null
+        keepalive_backlog: null
+        keepalive_pool_size: 30
+        password: null
+        port: null
+        read_timeout: null
+        send_timeout: null
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      window_size:
+      - 60
+      window_type: sliding
+    name: rate-limiting-advanced
+consumers:
+- groups:
+  - name: premium_consumers
+  keyauth_credentials:
+  - key: premiumConsumerKey
+  username: premiumConsumer
+- groups:
+  - name: standard_consumers
+  keyauth_credentials:
+  - key: standardConsumerKey
+  username: standardConsumer
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: api.kong-air.com
+  name: bookings-service
+  path: /
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: bookings-service_checkhealth
+    path_handling: v0
+    paths:
+    - ~/health$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: bookings-service_get-bookings
+    path_handling: v0
+    paths:
+    - ~/bookings$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - POST
+    name: bookings-service_post-booking
+    path_handling: v0
+    paths:
+    - ~/bookings$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.kong-air.com
+  name: customer-information-service
+  path: /
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: customer-information-service_get-cust-info
+    path_handling: v0
+    paths:
+    - ~/customer$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: customer-information-service_health_get
+    path_handling: v0
+    paths:
+    - ~/health$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.kong-air.com
+  name: flights-service
+  path: /
+  plugins:
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      run_on_preflight: true
+    enabled: true
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: flights-service_get-flight-by-number
+    path_handling: v0
+    paths:
+    - ~/flights/(?<flightnumber>[^#?/]+)$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 100
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: flights-service_get-flight-details
+    path_handling: v0
+    paths:
+    - ~/flights/(?<flightnumber>[^#?/]+)/details$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 100
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: flights-service_get-flights
+    path_handling: v0
+    paths:
+    - ~/flights$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: flights-service_health_get
+    path_handling: v0
+    paths:
+    - ~/health$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.kong-air.com
+  name: routes-service
+  path: /
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: routes-service_get-route
+    path_handling: v0
+    paths:
+    - ~/routes/(?<id>[^#?/]+)$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 100
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: routes-service_get-routes
+    path_handling: v0
+    paths:
+    - ~/routes$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: routes-service_health_get
+    path_handling: v0
+    paths:
+    - ~/health$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 200
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000

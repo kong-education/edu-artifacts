@@ -1,0 +1,117 @@
+services:
+ 
+  debug:
+    image: alpine:latest
+    container_name: debug
+    stdin_open: true
+    tty: true
+    command: /bin/sh
+    depends_on:
+      - elasticsearch
+      - kibana
+      - redis-vector
+      - prometheus
+      - grafana
+      - kong-ent
+    links:
+      - elasticsearch
+      - kibana
+      - redis-vector
+      - prometheus
+      - grafana
+      - kong-ent
+    environment:
+      - TERM=xterm
+    entrypoint: ["sh", "-c", "apk add --no-cache curl busybox-extras && tail -f /dev/null"]
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/mnt/config/loki-config.yaml
+    command: -config.file=/mnt/config/loki-config.yaml -log.level=debug
+
+
+  elasticsearch:
+   image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+   container_name: elasticsearch
+   environment: 
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+   ports:
+    - 9200:9200
+
+  kibana:
+   image: docker.elastic.co/kibana/kibana:8.11.0
+   container_name: kibana
+   depends_on:
+    - elasticsearch
+   ports: 
+    - 5601:5601
+
+  redis-vector:
+    image: redis/redis-stack:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDISEARCH=1
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - "--log.level=debug"
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+
+  kong-ent:
+   image: kong/kong-gateway:3.8.0.0
+   container_name: kong-ent
+   restart: always
+   ports:
+    - 8000:8000
+    - 8100:8100
+   volumes:
+    - ./cp.cer:/etc/cert/cp.cer:ro
+    - ./cp.key:/etc/cert/cp.key:ro
+   environment:
+    - KONG_STATUS_LISTEN=0.0.0.0:8100
+    - KONG_AUDIT_LOG=on
+    - KONG_ROLE=data_plane
+    - KONG_DATABASE=off
+    - KONG_VITALS=off
+    - KONG_CLUSTER_MTLS=pki
+    - KONG_CLUSTER_CONTROL_PLANE=bbd22ee9c7.us.cp0.konghq.com:443
+    - KONG_CLUSTER_SERVER_NAME=bbd22ee9c7.us.cp0.konghq.com
+    - KONG_CLUSTER_TELEMETRY_ENDPOINT=bbd22ee9c7.us.tp0.konghq.com:443
+    - KONG_CLUSTER_TELEMETRY_SERVER_NAME=bbd22ee9c7.us.tp0.konghq.com
+    - KONG_LUA_SSL_TRUSTED_CERTIFICATE=system
+    ## TLS for CP below 2
+    - KONG_CLUSTER_CERT=/etc/cert/cp.cer
+    - KONG_CLUSTER_CERT_KEY=/etc/cert/cp.key
+    - KONG_KONNECT_MODE=on
+    - KONG_CLUSTER_DP_LABELS=created-by:konnect
+    - KONG_LICENSE_DATA=${KONG_LICENSE_DATA}
+    - KONG_UNTRUSTED_LUA=on
+    - KONG_UNTRUSTED_LUA_SANDBOX_REQUIRES=resty.http,cjson

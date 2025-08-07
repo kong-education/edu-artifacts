@@ -1,0 +1,23 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httproute.kong.kongair-bookings.0
+  name: bookings-service
+  port: 3000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: get-bookings
+    path_handling: v0
+    paths:
+    - /bookings
+    preserve_host: false
+    protocols:
+    - http
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false

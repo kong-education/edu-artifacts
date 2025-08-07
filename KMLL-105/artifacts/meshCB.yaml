@@ -1,0 +1,32 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshCircuitBreaker
+metadata:
+  namespace: kong-mesh-system
+  name: circuit-breaker-example
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      kuma.io/service: frontend_kong-mesh-demo_svc_8088
+  to:
+    - targetRef:
+        kind: MeshService
+        name: backend_kong-mesh-demo_svc_3001
+      default:
+        connectionLimits:
+          maxConnections: 2
+          maxPendingRequests: 2
+          maxRequests: 2
+          maxRetries: 2
+        outlierDetection:
+          interval: 5s
+          baseEjectionTime: 90s
+          maxEjectionPercent: 100
+          splitExternalAndLocalErrors: false
+          detectors:
+            totalFailures:
+              consecutive: 2
+            gatewayFailures:
+              consecutive: 2
+            localOriginFailures:
+              consecutive: 2

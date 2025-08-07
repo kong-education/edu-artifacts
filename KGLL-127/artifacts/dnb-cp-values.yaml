@@ -1,0 +1,98 @@
+# Do not use Kong Ingress Controller
+ingressController:
+ enabled: false
+  
+image:
+ repository: kong/kong-gateway
+ tag: "3.6.1.3"
+  
+# Mount the secret created earlier
+secretVolumes:
+ - kong-cluster-cert
+ - kong-manager-tls
+ - kong-admin-tls
+env:
+ # This is a control_plane node
+ role: control_plane
+ # These certificates are used for control plane / data plane communication
+ cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+ cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+
+ admin_gui_url: ${KONG_ADMIN_GUI_URL}
+ admin_gui_api_url: ${KONG_ADMIN_GUI_API_URL}
+ admin_gui_ssl_cert:  /etc/secrets/kong-manager-tls/tls.crt
+ admin_gui_ssl_cert_key:  /etc/secrets/kong-manager-tls/tls.key
+ admin_ssl_cert: /etc/secrets/kong-admin-tls/tls.crt
+ admin_ssl_cert_key:  /etc/secrets/kong-admin-tls/tls.key
+  
+ # Database
+ database: postgres
+ pg_database: kong
+ pg_user: kong
+ pg_password: kong
+ pg_host: kongcp-postgresql.kongcp.svc.cluster.local
+  
+ # Kong Manager password
+ password: kong_admin_password
+
+# Enterprise functionality
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  portal:
+    enabled: true
+
+  vitals:
+    enabled: true
+  
+# The control plane serves the Admin API
+admin:
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30001
+  tls:
+    enabled: true
+    nodePort: 30501
+ # ingress:
+ #   enabled: true
+  
+# Clustering endpoints are required in hybrid mode
+cluster:
+ enabled: true
+ tls:
+   enabled: true
+  
+clustertelemetry:
+ enabled: true
+ tls:
+   enabled: true
+  
+# Optional features
+manager:
+  enabled: true
+  type: NodePort
+  http:
+    nodePort: 30002
+  tls:
+    enabled: true
+    nodePort: 30500
+  ingress:
+    enabled: true
+  
+# These roles will be served by different Helm releases
+proxy:
+ enabled: false
+
+# This is for testing purposes only
+# DO NOT DO THIS IN PRODUCTION
+# Your cluster needs a way to create PersistentVolumeClaims
+# if this option is enabled
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    database: kong
+    password: kong
+    postgresPassword: "kong"

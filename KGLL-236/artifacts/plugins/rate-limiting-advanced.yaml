@@ -1,0 +1,22 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: rate-limiting-advanced-flights
+plugin: rate-limiting-advanced
+config:
+  limit:
+  - 10
+  - 20
+  window_size:
+  - 30
+  - 40
+  identifier: consumer
+  sync_rate: 0
+  namespace: kong
+  hide_client_headers: false
+  window_type: sliding
+  strategy: redis
+  redis:
+    host: redis-master
+    port: 6379
+    password: PASSWORD

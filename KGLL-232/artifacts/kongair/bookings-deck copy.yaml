@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-bookings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-bookings
+  template:
+    metadata:
+      labels:
+        app: kongair-bookings
+    spec:
+      containers:
+      - name: kongair-bookings
+        image: kongedu/kongair-bookings:1.0
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-bookings
+  labels:
+    app: kongair-bookings
+spec:
+  selector:
+    app: kongair-bookings
+  ports:
+    - protocol: TCP
+      targetPort: 3000
+      port: 5054

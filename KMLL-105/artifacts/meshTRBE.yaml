@@ -1,0 +1,38 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshHTTPRoute
+metadata:
+ name: http-split
+ namespace: kong-mesh-system
+ labels:
+   kuma.io/mesh: default
+spec:
+ targetRef:
+   kind: MeshSubset
+   tags:
+     app: kong-mesh-demo-frontend
+ to:
+ - targetRef:
+     kind: MeshService
+     name: backend_kong-mesh-demo_svc_3001
+   rules:
+   - matches:
+     - path:
+         type: PathPrefix
+         value: "/"
+     default:
+       backendRefs:
+       - kind: MeshServiceSubset
+         name: backend_kong-mesh-demo_svc_3001
+         weight: 80
+         tags:
+           version: v0
+       - kind: MeshServiceSubset
+         name: backend_kong-mesh-demo_svc_3001
+         weight: 20
+         tags:
+           version: v1
+       - kind: MeshServiceSubset
+         name: backend_kong-mesh-demo_svc_3001
+         weight: 0
+         tags:
+           version: v2

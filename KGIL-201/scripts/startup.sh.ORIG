@@ -1,0 +1,198 @@
+#!/bin/bash
+ 
+#========================================================#
+#       Prevent losing /tmp after vm goes to sleep       #
+#========================================================#
+
+# Set /tmp cleanup duration to 30 days:
+
+cat > /etc/tmpfiles.d/tmp.conf <<EOF
+d /tmp 1777 root root 30d
+EOF
+systemctl status systemd-tmpfiles-clean.service
+
+echo "export KONG_GW_VERSION=3.10" >> /home/ubuntu/.envs
+
+# These variables are required for OIDC lesson
+echo 'export KEYCLOAK_URI="http://keycloak:8080"' >> /home/ubuntu/.envs
+echo 'export KEYCLOAK_CONFIG_ISSUER="http://keycloak:8080/auth/realms/kong/.well-known/openid-configuration"' >> /home/ubuntu/.envs
+echo 'export KEYCLOAK_REDIRECT_URI="http://localhost:8000"' >> /home/ubuntu/.envs
+
+# #========================================================#
+# #       Copy All Relevant Startups into Place            #
+# #========================================================#
+
+mkdir /home/ubuntu/$KONG_COURSE_ID
+mkdir /home/ubuntu/ca_config
+
+#Requires its own CA config for the mTLS lesson
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/artifacts/create-certificate.sh /home/ubuntu/ca_config/
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/artifacts/openssl.cnf /home/ubuntu/ca_config/
+chmod 777 /home/ubuntu/ca_config/*
+# Ubuntu user will need access to these directories in 'setup' menu
+chown -R ubuntu:ubuntu /home/ubuntu/ca_config/
+chown -R ubuntu:ubuntu /tmp/edu-strigo-courses
+
+
+# Get a list of startup scripts required
+# Need these locally as some startup scripts blow away /tmp/edu-strigo-courses
+SOURCE_COURSES=(
+"KDLL-202"
+"KGLL-202"
+"KGLL-203"
+"KGLL-204"
+"KGLL-205"
+"KGLL-206"
+"KGLL-209"
+"KGLL-210"
+"KGLL-220"
+"KDLL-216"
+"KDLL-217"
+"KDLL-218"
+"KDLL-219"
+"KDLL-223"
+)
+
+mkdir -p /home/ubuntu/.sources
+
+for sc in "${SOURCE_COURSES[@]}" ; do
+    if [ -d "/tmp/edu-strigo-courses/$sc" ]; then
+        # New file structure
+        cp -R /tmp/edu-strigo-courses/$sc /home/ubuntu/.sources/
+        rm -rf /home/ubuntu/.sources/$sc/contents
+        rm -rf /home/ubuntu/.sources/$sc/graphics
+    else
+        # Old file structure
+        # mkdir /home/ubuntu/.sources/$sc
+        # cp -R /tmp/edu-strigo-courses/scripts/$sc/* /home/ubuntu/.sources/$sc
+        cp -R /tmp/edu-strigo-courses/scripts/$sc /home/ubuntu/.sources/
+    fi
+done
+
+chmod 777 -R /home/ubuntu/.sources
+chown -R ubuntu:ubuntu /home/ubuntu/.sources
+
+#===============================#
+#       Set PATH for menu       #
+#===============================#
+
+cat <<EOF >> /home/ubuntu/.envs 
+if [ -d "/home/ubuntu/.local/bin" ] ; then
+    PATH="/home/ubuntu/.local/bin:$PATH"
+fi
+export COURSEDIR="/home/ubuntu/$KONG_COURSE_ID"
+EOF
+
+# echo 'export COURSEDIR="/home/ubuntu/$KONG_COURSE_ID"' >> /home/ubuntu/.envs
+ 
+source /home/ubuntu/.envs
+
+mkdir -p $COURSEDIR
+chown -R ubuntu:ubuntu $COURSEDIR
+
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/scripts/.setup_lesson* /home/ubuntu/
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/scripts/.reset_lab.sh /home/ubuntu/
+# cp /tmp/edu-strigo-courses/scripts/$KONG_COURSE_ID/setup_lesson.sh /home/ubuntu/
+chmod u+x /home/ubuntu/*.sh
+ln -s /home/ubuntu/.setup_lesson.sh /home/ubuntu/.local/bin/setup
+
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/scripts/.my-deck-config.yaml  /home/ubuntu/
+cp /tmp/edu-strigo-courses/$KONG_COURSE_ID/scripts/configure.sh /home/ubuntu/
+chmod u+x /home/ubuntu/configure.sh
+
+# Copy the whole config directory into place for use in setting up individual lessons labs
+mkdir -p  /home/ubuntu/.gateway-ops
+# cp -R /tmp/edu-strigo-courses/scripts/common/gateway-ops/* /home/ubuntu/.gateway-ops
+
+# #switch off vitals and dev portal
+# yq eval '.services["kong-cp"].environment.KONG_VITALS = "off"' -i /home/ubuntu/.gateway-ops/installation/docker-compose.yaml
+# yq eval '.services["kong-dp"].environment.KONG_VITALS = "off"' -i /home/ubuntu/.gateway-ops/installation/docker-compose.yaml
+# yq eval '.services["kong-cp"].environment.KONG_PORTAL = "off"' -i /home/ubuntu/.gateway-ops/installation/docker-compose.yaml
+
+# Pull docker containers in the background
+docker compose -f /home/ubuntu/.gateway-ops/installation/docker-compose.yaml pull > /dev/null 2>&1 &
+
+#====================#
+#  Configure VS Code #
+#====================#
+
+cp /tmp/edu-strigo-apps/code-server/docker-compose.yaml "$COURSEDIR"/code-server-compose.yaml
+docker compose -f "$COURSEDIR"/code-server-compose.yaml up -d   2>&1 &
+
+
+# # In case we wanted a common script, e.g. banner text for downtime
+# source /tmp/edu-strigo-courses/scripts/common/startup_common.sh
+
+# curl -fsSL https://github.com/Kong/deck/releases/download/v1.37.0/deck_1.37.0_linux_amd64.tar.gz | \
+# tar -xzv -C /usr/local/bin/ deck
+git clone git@github.com:kong-education/KongAir.git /tmp/KongAir
+docker compose -f /tmp/KongAir/docker-compose.yaml pull  2>&1 &
+chown -R ubuntu:ubuntu /home/ubuntu
+
+
+# # These need to have root permissions
+# mkdir -p /etc/kong/nginx
+# cp /tmp/edu-strigo-infra/docker/nginx-kong.conf /etc/kong/nginx/
+# cp /tmp/edu-strigo-infra/docker/nginx-kong-gui-include.conf /etc/kong/nginx/
+# chown root:root /etc/kong/nginx/nginx*
+# cp /tmp/edu-strigo-infra/docker/nginx-kong.conf $COURSEDIR/misc/
+# cp /tmp/edu-strigo-infra/docker/nginx-kong-gui-include.conf $COURSEDIR/misc/
+# chown root:root $COURSEDIR/misc/nginx*
+
+
+# # This is a fix as ubuntu user cannot set root permissons when setting up lessons
+# sed -i 's|${PWD}/misc/nginx-kong.conf|/etc/kong/nginx/nginx-kong.conf|g' /home/ubuntu/.gateway-ops/installation/docker-compose*
+# sed -i 's|${PWD}/misc/nginx-kong-gui-include.conf|/etc/kong/nginx/nginx-kong-gui-include.conf|g' /home/ubuntu/.gateway-ops/installation/docker-compose*
+
+# rm /home/ubuntu/.gateway-ops/installation/misc/nginx*
+
+mkdir -p /usr/local/kong/logs
+chown -R ubuntu:ubuntu /usr/local/kong/logs
+
+# This is required for KGLL-210, but there its run as root
+echo "%ubuntu ALL=(ALL) NOPASSWD: /usr/bin/chmod, /usr/bin/chown" >> /etc/sudoers.d/90-cloud-init-users 
+
+
+######################################
+# Uncomment for troubleshooting mode #
+######################################
+# Because dumping env vars and running 'clear' is a pain
+
+# cat > /home/ubuntu/.alter.sh <<EOF
+# #!/bin/bash
+
+# for sc in "${SOURCE_COURSES[@]}" ; do
+#     cd /home/ubuntu/.sources/$sc/scripts
+#     cp startup.sh startup.sh.BAK
+#     cp post_startup.sh post_startup.sh.BAK
+    
+#     sed -i '/^source \/home\/ubuntu\/\.envs$/{
+#         s/^/set +x\n/
+#         a\
+# set -x
+#     }' post_startup.sh
+# sed -i 's/clear//g' post_startup.sh
+#     sed -i '/^source \/home\/ubuntu\/\.envs$/{
+#         s/^/set +x\n/
+#         a\
+# set -x
+#     }' post_startup.sh
+# sed -i 's/clear//g' post_startup.sh
+# done
+# EOF
+# chmod a+x /home/ubuntu/.alter.sh
+# chown ubuntu:ubuntu /home/ubuntu/.alter.sh
+
+######################################
+# Uncomment for troubleshooting mode #
+######################################
+
+# Cleanup 
+# rm -rf /home/ubuntu/startup.sh
+# rm -rf /tmp/edu-strigo-courses
+touch /home/ubuntu/.initcomplete
+chown ubuntu:ubuntu /home/ubuntu/.initcomplete
+
+
+
+

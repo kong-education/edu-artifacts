@@ -1,0 +1,16 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  name: allow-all-to-httpbin
+  namespace: kong-mesh-system
+spec:
+  targetRef:
+    kind: MeshService
+    name: httpbin
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          kuma.io/service: netshoot_kong-mesh-demo_svc
+      default:
+        action: Allow

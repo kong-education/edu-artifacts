@@ -1,0 +1,64 @@
+_format_version: "3.0"
+_workspace: workspace02
+consumers:
+- keyauth_credentials:
+  - key: bin-2-key
+  username: bin-2-consumer
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.org
+  name: bin-2-service
+  path: /anything
+  plugins:
+  - config:
+      anonymous: null
+      hide_credentials: false
+    enabled: true
+    name: basic-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      run_on_preflight: true
+    enabled: true
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: bin-2-route
+    path_handling: v0
+    paths:
+    - /bin2
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

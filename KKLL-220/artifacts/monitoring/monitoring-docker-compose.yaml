@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    # image: grafana/grafana:latest
+    image: grafana/grafana:8.3.4
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+  statsd-exporter:
+    image: prom/statsd-exporter:latest
+    container_name: statsd-exporter
+    ports:
+      - "9102:9102"  # Prometheus metrics endpoint
+      - "9125:9125/udp"  # StatsD UDP listener
+    volumes:
+      - ./statsd-exporter:/etc/statsd-exporter
+    command:
+      - '--statsd.mapping-config=/etc/statsd-exporter/statsd_mapping.yml'
+      - '--web.listen-address=:9102'
+      - '--statsd.listen-udp=:9125'
+    restart: unless-stopped
+
+  splunk:
+    image: splunk/splunk:latest
+    container_name: splunk
+    hostname: splunk
+    environment:
+      SPLUNK_START_ARGS: --accept-license
+      SPLUNK_PASSWORD: password
+    ports:
+      - "9001:8000"
+      - "8089:8089"
+      - "514:514/tcp"
+
+volumes:
+  prometheus_data:
+  grafana_data:

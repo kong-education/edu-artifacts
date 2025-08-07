@@ -1,0 +1,49 @@
+_format_version: "3.0"
+_workspace: default
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: flights.kongair
+  name: kongair_flights_service
+  port: 8080
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: get_flights
+    path_handling: v0
+    paths:
+    - /flights
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: routes.kongair
+  name: kongair_routes_service
+  port: 8080
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: get_flight_routes
+    path_handling: v0
+    paths:
+    - /routes
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000

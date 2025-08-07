@@ -1,0 +1,9 @@
+plugins:
+- name: opentelemetry
+  # service: kongair_flights_service
+  enabled: true
+  config:
+    traces_endpoint: http://jaeger-collector:4318/v1/traces
+    logs_endpoint: http://jaeger-collector:4318/v1/logs
+    headers:
+      X-Auth-Token: secret-token

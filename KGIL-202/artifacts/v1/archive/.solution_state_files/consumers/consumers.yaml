@@ -1,0 +1,5 @@
+consumers:
+- username: Jane
+  keyauth_credentials:
+  - key: jane-key
+- username: anonymous_user

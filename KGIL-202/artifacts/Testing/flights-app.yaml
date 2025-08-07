@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-flights
+  namespace: kongair
+  labels:
+    app: kongair-flights
+spec:
+  selector:
+    app: kongair-flights
+  ports:
+    - protocol: TCP
+      targetPort: 8080
+      port: 5052
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-flights
+  namespace: kongair
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-flights
+  template:
+    metadata:
+      labels:
+        app: kongair-flights
+    spec:
+      containers:
+      - name: kongair-flights
+        image: kongedu/kongair-flights:1.0
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8080
+# ---
+# apiVersion: gateway.networking.k8s.io/v1beta1
+# kind: ReferenceGrant
+# metadata:
+#   name: kongair-flights
+#   namespace: kongair
+# spec:
+#   from:
+#   - group: gateway.networking.k8s.io
+#     kind: HTTPRoute
+#     namespace: kong
+#   to:
+#   - group: ""
+#     kind: Service

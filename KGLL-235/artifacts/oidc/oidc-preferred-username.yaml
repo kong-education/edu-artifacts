@@ -1,0 +1,28 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: employee
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: employee
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: openid-connect-kongair
+plugin: openid-connect
+config:
+  issuer: http://keycloak.kong.svc.cluster.local:8080/auth/realms/kong/.well-known/openid-configuration
+  issuers_allowed: 
+  - http://keycloak.kong.svc.cluster.local:8080/auth/realms/kong
+  redirect_uri: 
+  - http://kongair-routes.kong.svc.cluster.local:5053/routes
+  consumer_claim: 
+  - preferred_username
+  client_id:
+  - kong
+  client_secret:
+  - $CLIENT_SECRET
+  ssl_verify: false
+  response_mode: form_post

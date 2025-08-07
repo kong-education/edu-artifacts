@@ -1,0 +1,7 @@
+plugins:
+- name: mtls-auth
+  service: confidential-service
+  config: 
+    ca_certificates:
+    - 
+    revocation_check_mode: 'SKIP'

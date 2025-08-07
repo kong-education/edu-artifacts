@@ -1,0 +1,85 @@
+plugins:
+- name: mocking
+  enabled: true
+  route: Transactions_API_of_BanKonG-listTranactions
+  config:
+    random_delay: true
+    max_delay_time: 1
+    min_delay_time: 0.001
+    api_specification: "openapi: 3.0.2\ninfo:\n  version: 1.2.0\n  title: Transactions
+      API of BanKonG\n  description: | \n    This API provides you access to the
+      transactions of a logged in user. You can get, create, change and delete
+      transactions (of course always depending on permissions).\n   \nservers:
+      \n  - url: http://localhost:3000/\n    description: local sandbox environment
+      \ \n#   - url: http://bankong.service-connectivity.com/api/v1/\n#     description:
+      production on multi-zone-mesh system\n#   - url: http://backend-transactions.bankong/api/v1/\n#
+      \    description: Lab environment\n  # - url: http://backend-transactions.bankong:3000/api/v1/\n
+      \ #   description: local sandbox environment  \n  \nsecurity:\n  - ApiKeyAuth:
+      [] \n  - OIDC: []\n  \npaths:\n  /transactions:\n    get:\n      description:
+      Lists all transactions\n      summary: List all transactions\n      tags:
+      [\"Transactions\"]\n      operationId: \"listTranactions\"\n      responses:\n
+      \       \"200\":\n          description: List of transactions\n          content:\n
+      \           \"application/json\":\n              schema:\n                $ref:
+      \"#/components/schemas/TransactionsList\"\n              examples:\n                 response:\n
+      \                  value:\n                     - id: 10\n                       source:
+      JA872659435350353\n                       senderName: Donald Duck\n                       destination:
+      IR8412325587359375895\n                       amount: 1000.00\n                       currency:
+      YEN\n                       subject: \"Invoice #10-15/12\"\n    post:\n
+      \     description: Initiate a transaction\n      summary: Create new transaction\n
+      \     tags: [\"Transactions\"]\n      operationId: \"initiateTransaction\"\n
+      \     requestBody:\n        content:\n          application/json; charset=utf-8:\n
+      \           schema:\n              $ref: \"#/components/schemas/Transaction\"\n
+      \     responses:\n        \"200\":\n          description: initiated transaction\n
+      \         content:\n            \"application/json\":\n              schema:\n
+      \               $ref: \"#/components/schemas/Transaction\"\n\n  /transactions/{id}:\n
+      \   get:\n      description: Returns a post by id\n      summary: Get specific
+      transaction\n      tags: [\"Transactions\"]\n      operationId: \"getTransaction\"\n
+      \     parameters:\n        - name: id\n          in: path\n          required:
+      true\n          description: The transaction id.\n          schema:\n            $ref:
+      \"#/components/schemas/TransactionId\"\n      responses:\n        \"200\":\n
+      \         description: Transaction received\n          content:\n            \"application/json\":\n
+      \             schema:\n                $ref: \"#/components/schemas/Transaction\"\n
+      \       \"404\":\n          description: Transaction not found\n    #  patch:\n
+      \   #   description: Change a transaction\n    #   summary: Update a transaction\n
+      \   #   tags: [\"Transactions\"]\n    #   operationId: \"changeTransaction\"\n
+      \   #   requestBody:\n    #     content:\n    #       application/json;
+      charset=utf-8:\n    #         schema:\n    #           $ref: \"#/components/schemas/Transaction\"\n
+      \   #   parameters:\n    #     - name: id\n    #       in: path\n    #       required:
+      true\n    #       description: The transaction id.\n    #       schema:\n
+      \   #         $ref: \"#/components/schemas/TransactionId\"\n    #   responses:\n
+      \   #     \"200\":\n    #       description: Transaction changed\n    #
+      \      content:\n    #         \"application/json\":\n    #           schema:\n
+      \   #             $ref: \"#/components/schemas/Transaction\"\n    #     \"404\":\n
+      \   #       description: Transaction not found\n    delete:\n      description:
+      Cancel a transaction\n      summary: Cancel a transaction\n      tags: [\"Transactions\"]\n
+      \     operationId: \"cancelTransaction\"\n      parameters:\n        - name:
+      id\n          in: path\n          required: true\n          description:
+      The transaction id.\n          schema:\n            $ref: \"#/components/schemas/TransactionId\"\n
+      \     responses:\n        \"200\":\n          description: Transaction cancelled\n
+      \         content:\n            \"application/json\":\n              schema:\n
+      \               $ref: \"#/components/schemas/Transaction\"\n        \"404\":\n
+      \         description: Transaction not found\n\ncomponents:\n  schemas:\n
+      \   TransactionId:\n      type: \"integer\"\n      description: \"Unique
+      identifier for the transaction. This identifier is both unique and immutable.\"
+      \   \n      example: 42\n    TransactionsList:\n      \"type\": \"array\"\n
+      \     \"items\":\n        $ref: \"#/components/schemas/Transaction\"\n    Transaction:\n
+      \     \"type\": \"object\"\n      \"required\":\n        - \"id\"\n        -
+      \"source\"\n        - \"senderName\"\n        - \"destination\"\n        -
+      \"amount\"\n        - \"currency\"\n        - \"subject\"\n      \"properties\":\n
+      \       id:\n          $ref: \"#/components/schemas/TransactionId\"\n        source:\n
+      \         type: \"string\"\n          description: \"The IBAN of the sending
+      account\"\n          pattern: \"^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$\"\n
+      \       senderName:\n          type: \"string\"\n        destination:\n
+      \         type: \"string\"\n          description: \"The IBAN of the receiving
+      account\"\n          pattern: \"^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$\"\n
+      \       amount:\n          description: \"The amount of the transaction.
+      Cannot be negative\"\n          type: number\n          minimum: 0.01\n
+      \         multipleOf: 0.01\n        currency:\n          description: \"A
+      code allocated to a currency by a Maintenance Agency under an international
+      identification scheme, as described in the latest edition of the international
+      standard ISO 4217\"\n          type: \"string\"\n          pattern: \"^[A-Z]{3,3}$\"\n
+      \       subject:\n          type: \"string\"\n          description: \"Description
+      that may be available for the statement fee.\"\n          minLength: 0\n
+      \         maxLength: 128\n\n  securitySchemes:\n    ApiKeyAuth:\n      type:
+      apiKey\n      in: header\n      name: apikey\n    OIDC:            \n      type:
+      http\n      scheme: bearer\n      bearerFormat: JWT"

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Wait for INIT script to complete
+while [ ! -f /home/ubuntu/.initcomplete ] ; do sleep 1; done
+
+source ~/$KONG_COURSE_ID/setScriptConfig
+
+# Validate PAT
+source ~/$KONG_COURSE_ID/setPAT.sh
+MYPAT=$(cat ~/$KONG_COURSE_ID/.pat)
+
+# Create control plane and read endpoints to env vars
+source ~/$KONG_COURSE_ID/setRTG.sh
+export KONG_CLUSTER_CONTROL_PLANE=$(https GET https://us.api.konghq.com/v2/runtime-groups --auth-type=bearer --auth=$MYPAT | jq -r '.data[] | select(.name == "My Control Plane") | .config.control_plane_endpoint' | cut -c 9-)
+export KONG_CLUSTER_TELEMETRY_ENDPOINT=$(https GET https://us.api.konghq.com/v2/runtime-groups --auth-type=bearer --auth=$MYPAT | jq -r '.data[] | select(.name == "My Control Plane") | .config.telemetry_endpoint' | cut -c 9-)
+
+# Get RTG ID
+CPID=$(cat $RTGIDF)
+
+# Create certificates
+openssl req -new -x509 -nodes -newkey rsa:2048 -subj "/CN=kongdp/C=US" -keyout ~/$KONG_COURSE_ID/tls.key -out ~/$KONG_COURSE_ID/tls.crt
+
+# Reformat the certificate into a single line for the API call:
+export CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' tls.crt)
+export KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' tls.key)
+
+# POST the certificate to your control plane  using the Konnect API:
+echo '{"cert":"'$CERT'"}' | http POST https://us.api.konghq.com/v2/runtime-groups/$CPID/dp-client-certificates --auth-type=bearer --auth=$MYPAT 
+
+# https POST https://us.api.konghq.com/v2/runtime-groups/$CPID/dp-client-certificates cert="$CERT" --auth-type=bearer --auth=$MYPAT
+
+# kind delete cluster
+
+kind create cluster --config kind.yaml
+
+kubectl create namespace kong
+
+kubectl create secret tls kong-cluster-cert \
+    -n kong \
+    --cert=/home/ubuntu/$KONG_COURSE_ID/tls.crt \
+    --key=/home/ubuntu/$KONG_COURSE_ID/tls.key
+
+helm repo add kong https://charts.konghq.com
+helm repo update
+helm install my-kong kong/kong -n kong --values ~/$KONG_COURSE_ID/values.yaml
+
+# helm delete kong/kong -n kong
+
+kubectl get pod -n kong
+kubectl -n kong patch service my-kong-kong-proxy --patch-file=patch-proxy.yaml
+
+

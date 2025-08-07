@@ -1,0 +1,8 @@
+# default.yml
+splunk:
+  conf:
+    web:
+      directory: /opt/splunk/etc/system/local/kong_web.conf
+      content:
+        settings:
+          root_endpoint: /splunk

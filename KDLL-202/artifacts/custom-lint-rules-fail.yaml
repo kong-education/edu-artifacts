@@ -1,0 +1,29 @@
+functions: [loadFromFile]
+
+rules:
+  https-only:
+    description: "Must use HTTPS protocol"
+    given: $.services[*].protocol
+    severity: warn
+    then:
+      function: pattern
+      functionOptions:
+        match: "^https"
+
+  # plugin-update-check:
+  #   description: "Check for plugins with schema changes for 3.x are configured"
+  #   given: $..plugins[*].name
+  #   severity: error
+  #   then:
+  #     field: "@"
+  #     function: loadFromFile
+  #     functionOptions:
+  #       filename: "./changed-plugins.txt"
+  # version-30:
+  #   description: "Check the version is correct"
+  #   given: $._format_version
+  #   severity: error
+  #   then:
+  #     function: pattern
+  #     functionOptions:
+  #       match: "^1.1$"

@@ -1,0 +1,162 @@
+#!/bin/bash
+
+# This version was used in creating a single observability lab using logging, opentel, monitoring etc
+
+#================================================#
+#       Setting Environment Variables            #
+#================================================#
+echo "export KONG_GW_VERSION=3.10" >> /home/ubuntu/.envs
+
+#Source the environment variables
+source /home/ubuntu/.envs
+ 
+#================================================#
+#       Configuring course file structure        #
+#================================================#
+COURSEDIR="/home/ubuntu/$KONG_COURSE_ID"
+mkdir -p "$COURSEDIR"
+
+# Copy the docker compose file that will be used for this course.
+cp /tmp/edu-strigo-infra/docker-compose.yaml $COURSEDIR
+
+# Copy the files needed to for the lab
+cp -R /tmp/edu-strigo-courses/$KONG_COURSE_ID/scripts/* "$COURSEDIR"
+cp -R /tmp/edu-strigo-courses/$KONG_COURSE_ID/artifacts/* "$COURSEDIR"
+
+# Copy edu-apps required for the lab
+
+# Copy the Mockbin configuration files
+mkdir -p "$COURSEDIR"/mockbin
+cp /tmp/edu-strigo-apps/mockbin/* "$COURSEDIR"/mockbin/
+
+# Copy the Grafana configuration files
+mkdir -p "$COURSEDIR"/grafana
+cp /tmp/edu-strigo-apps/grafana/* "$COURSEDIR"/grafana/
+
+# Copy the Prometheus configuration files
+mkdir -p "$COURSEDIR"/prometheus
+cp /tmp/edu-strigo-apps/prometheus/* "$COURSEDIR"/prometheus/
+
+# Copy the StatsD configuration files
+mkdir -p "$COURSEDIR"/statsd
+cp /tmp/edu-strigo-apps/statsd/* "$COURSEDIR"/statsd/
+
+# Copy the Redis configuration files
+mkdir -p "$COURSEDIR"/redis
+cp /tmp/edu-strigo-apps/redis/* "$COURSEDIR"/redis/
+
+docker compose -f "$COURSEDIR"/docker-compose-jaeger.yaml up -d
+
+chown -R ubuntu:ubuntu "$COURSEDIR"
+
+
+#================================================#
+#  Configure Docker Files/Kubernetes Manifests   #
+#================================================#
+ 
+# Remove all commented out lines so that it easy to read.
+sed -i '/^#/d' "$COURSEDIR"/docker-compose.yaml
+
+# Configure Kong Gateway as required for the course
+yq eval '.services["kong-cp"].environment.KONG_ENFORCE_RBAC = "off"' -i $COURSEDIR/docker-compose.yaml
+yq eval 'del(.services["kong-cp"].environment.KONG_ADMIN_GUI_AUTH)' -i $COURSEDIR/docker-compose.yaml
+yq eval 'del(.services["kong-cp"].environment.KONG_ADMIN_GUI_SESSION_CONF)' -i $COURSEDIR/docker-compose.yaml
+yq eval '.services["kong-cp"].environment.KONG_AUDIT_LOG = "off"' -i $COURSEDIR/docker-compose.yaml
+
+# Switch on Vitals
+
+# yq eval '.services["kong-cp"].environment.KONG_VITALS = "on"' -i $COURSEDIR/docker-compose.yaml
+# yq eval '.services["kong-dp"].environment.KONG_VITALS = "on"' -i $COURSEDIR/docker-compose.yaml
+
+# Configure Status API ports
+yq eval '.services["kong-cp"].environment.KONG_STATUS_LISTEN = "0.0.0.0:8100"' -i $COURSEDIR/docker-compose.yaml
+yq eval '.services["kong-dp"].environment.KONG_STATUS_LISTEN = "0.0.0.0:8101"' -i $COURSEDIR/docker-compose.yaml
+
+# # Set log level
+# yq eval '.services["kong-cp"].environment.KONG_LOG_LEVEL = "info"' -i $COURSEDIR/docker-compose.yaml
+# yq eval '.services["kong-dp"].environment.KONG_LOG_LEVEL = "info"' -i $COURSEDIR/docker-compose.yaml
+
+# Configure Grafana credentials
+yq eval '.services.grafana.environment = ["GF_SECURITY_ADMIN_USER=admin", "GF_SECURITY_ADMIN_PASSWORD=admin", "GF_AUTH_ANONYMOUS_ENABLED=true", "GF_AUTH_ANONYMOUS_ORG_ROLE=Admin"]' -i $COURSEDIR/grafana/docker-compose.yaml
+
+
+# Copy the mockbin configuration files
+mkdir -p "$COURSEDIR"/kongair
+curl -fsSL https://raw.githubusercontent.com/kong-education/KongAir/main/docker-compose.yaml -o "$COURSEDIR/KongAir/docker-compose.yaml"
+# pushd "$COURSEDIR"/kongair &> /dev/null
+# git init --initial-branch=main &> /dev/null
+# git remote add -f origin https://github.com/kong-education/KongAir-for-developers.git &> /dev/null
+# git fetch origin &> /dev/null
+# git checkout origin/main -- docker-compose.yaml &> /dev/null
+# rm -R -f .git
+# popd &> /dev/null
+
+
+yq eval '.networks["kong-edu-net"].external = true' -i "$COURSEDIR"/kongair/docker-compose.yaml
+
+# Remove custom nginx gui template as this should no longer be necessary
+yq -i 'del(.services.kong-cp.volumes.[] | select(. == "/etc/kong/conf/strigo_kong_nginx.template:/usr/local/share/lua/5.1/kong/templates/nginx_kong_gui_include.lua"))' $COURSEDIR/docker-compose.yaml
+
+# # For this lab there is a conflict on port 3000 between Grafana and BanKong, so we need to change the Grafana host port to 3001
+# # Note the strigo interface config must also be updated.
+# yq eval '.services.grafana.ports[0] = "3001:3000"' -i $COURSEDIR/grafana/docker-compose.yaml
+
+# Replace the default Kong version of 3.4 with 3.10
+yq eval '(.services[] | select(.image == "kong/kong-gateway:${KONG_GW_VERSION:-3.4}").image) = "kong/kong-gateway:${KONG_GW_VERSION:-3.10}"' -i  $COURSEDIR/docker-compose.yaml
+
+# Set log level
+yq eval '.services["kong-cp"].environment.KONG_LOG_LEVEL = "info"' -i $COURSEDIR/docker-compose.yaml
+yq eval '.services["kong-dp"].environment.KONG_LOG_LEVEL = "info"' -i $COURSEDIR/docker-compose.yaml
+
+mkdir -p $COURSEDIR/logging
+mv "$COURSEDIR"/kong-splunk.yaml "$COURSEDIR"/logging
+mkdir -p "$COURSEDIR"/splunk
+cp /tmp/edu-strigo-apps/splunk/* "$COURSEDIR"/splunk/
+chmod +x $COURSEDIR/kong_setup_and_test.sh
+
+chmod 777 $COURSEDIR/splunk/web.conf
+chown -R ubuntu:ubuntu "$COURSEDIR"
+
+
+#====================#
+# Configure for OTel #
+#====================#
+
+yq -i '.services.kong-cp.environment.KONG_TRACING_INSTRUMENTATIONS = "all"' docker-compose.yaml
+yq -i '.services.kong-cp.environment.KONG_TRACING_SAMPLING_RATE = "1.0"' docker-compose.yaml
+yq -i '.services.kong-dp.environment.KONG_TRACING_INSTRUMENTATIONS = "all"' docker-compose.yaml
+yq -i '.services.kong-dp.environment.KONG_TRACING_SAMPLING_RATE = "1.0"' docker-compose.yaml
+
+
+#===================#
+# Configure VS Code #
+#===================#
+
+cp /tmp/edu-strigo-apps/code-server/docker-compose.yaml "$COURSEDIR"/code-server-compose.yaml
+
+#================================================#
+#  Pull images for Kong Gateway and other Apps   #
+#================================================#
+
+docker compose -f $COURSEDIR/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/mockbin/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/grafana/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/prometheus/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/statsd/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/redis/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/kongair/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/code-server-compose.yaml pull > /dev/null 2>&1
+docker compose -f $COURSEDIR/splunk/docker-compose.yaml pull > /dev/null 2>&1 &
+docker compose -f $COURSEDIR/jaeger/docker-compose-jaeger.yaml pull > /dev/null 2>&1 &
+
+
+#================================================#
+#  Cleanup                                       #
+#================================================#
+
+# rm -rf /home/ubuntu/startup.sh
+# rm -rf /tmp/edu-strigo-courses
+# rm -rf /tmp/KongAir
+# rm -rf /tmp/edu-strigo-apps
+touch /home/ubuntu/.initcomplete
+

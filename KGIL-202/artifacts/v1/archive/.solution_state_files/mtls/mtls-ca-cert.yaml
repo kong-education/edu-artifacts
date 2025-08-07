@@ -1,0 +1,5 @@
+ca_certificates:
+- cert: |-
+
+  tags:
+  - ownCA

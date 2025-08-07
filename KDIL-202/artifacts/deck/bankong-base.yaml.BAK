@@ -1,0 +1,128 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 60000
+  host: HOST
+  name: Transactions_API_of_BanKonG
+  path: /api/v1/
+  port: 3000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  write_timeout: 60000
+  tags:
+  - OAS3_import
+  routes:
+  - name: Transactions_API_of_BanKonG-listTranactions
+    methods:
+    - GET
+    paths:
+    - ~/transactions$
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    tags:
+    - OAS3_import
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+  - name: Transactions_API_of_BanKonG-cancelTransaction
+    methods:
+    - DELETE
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    tags:
+    - OAS3_import
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+  - name: Transactions_API_of_BanKonG-changeTransaction
+    methods:
+    - PATCH
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    tags:
+    - OAS3_import
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+  - name: Transactions_API_of_BanKonG-getTransaction
+    methods:
+    - GET
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    tags:
+    - OAS3_import
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+  - name: Transactions_API_of_BanKonG-initiate_a_transaction
+    methods:
+    - POST
+    paths:
+    - ~/transactions$
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    tags:
+    - OAS3_import
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+- connect_timeout: 60000
+  host: HOST
+  name: Mockbin_API_of_BanKonG
+  path: /request
+  port: 8888
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  write_timeout: 60000
+  tags:
+  - bankong-api-tag
+  - marketing-tag
+  routes:
+  - name: echo-route
+    paths:
+    - /echo-request
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: false
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+    tags:
+    - bankong-api-tag
+    - marketing-tag

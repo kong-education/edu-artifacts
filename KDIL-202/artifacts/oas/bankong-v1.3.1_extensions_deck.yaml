@@ -1,0 +1,73 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 30000
+  host: test.bankong
+  id: 6df5673c-8ac4-52d6-9e93-6186ef8e9d4a
+  name: bankong
+  path: /api/v1
+  plugins:
+  - config:
+      hide_credentials: true
+      key_in_body: false
+      key_names:
+      - api_key
+      - apikey
+    enabled: true
+    id: 02a1ab8e-0c41-522f-8af9-039b40e6747c
+    name: key-auth
+    tags: []
+  port: 3000
+  protocol: http
+  read_timeout: 30000
+  retries: 10
+  routes:
+  - id: 1c306a5c-a278-5005-b2fb-2bfe80724612
+    methods:
+    - GET
+    name: bankong_transactions_alltransactions
+    paths:
+    - ~/transactions$
+    plugins:
+    - config:
+        minute: 5
+        policy: local
+        second: 2
+      id: 073d405f-0f0b-5f49-956b-12b6cd15923f
+      name: rate-limiting
+      tags: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: 5f88c0a8-d686-5829-9271-cf371f9c850a
+    methods:
+    - POST
+    name: bankong_initiatetransaction
+    paths:
+    - ~/transactions$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  - id: 87f209e7-f870-5cf6-ad67-2d6069bb83a5
+    methods:
+    - DELETE
+    name: bankong_canceltransaction
+    paths:
+    - ~/transactions/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  - id: 1ed8408d-7370-5f61-8cb7-50017c978356
+    methods:
+    - GET
+    name: bankong_gettransaction
+    paths:
+    - ~/transactions/(?<id>[^#?/]+)$
+    plugins: []
+    regex_priority: 100
+    strip_path: false
+    tags: []
+  tags: []
+  write_timeout: 30000
+upstreams: []

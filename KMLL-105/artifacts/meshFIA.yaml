@@ -1,0 +1,21 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshFaultInjection
+metadata:
+  name: abort
+  namespace: kong-mesh-system
+  labels:
+    kuma.io/mesh: default
+spec:
+  targetRef:
+    kind: MeshService
+    name: backend_kong-mesh-demo_svc_3001
+  from:
+  - targetRef:
+      kind: MeshSubset
+      tags:
+        kuma.io/service: frontend_kong-mesh-demo_svc_8088
+    default:
+      http:
+      - abort:
+          httpStatus: 503
+          percentage: 100

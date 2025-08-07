@@ -1,0 +1,68 @@
+{
+  "links": {
+    "create": "/services/data/inputs/tcp/raw/_new",
+    "_reload": "/services/data/inputs/tcp/raw/_reload",
+    "_acl": "/services/data/inputs/tcp/raw/_acl"
+  },
+  "origin": "https://localhost:8089/services/data/inputs/tcp/raw",
+  "updated": "2025-05-27T16:47:07+00:00",
+  "generator": {
+    "build": "e973afd6886e",
+    "version": "8.2.12"
+  },
+  "entry": [
+    {
+      "name": "514",
+      "id": "https://localhost:8089/servicesNS/nobody/launcher/data/inputs/tcp/raw/514",
+      "updated": "1970-01-01T00:00:00+00:00",
+      "links": {
+        "alternate": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514",
+        "list": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514",
+        "_reload": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514/_reload",
+        "edit": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514",
+        "remove": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514",
+        "connections": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514/connections",
+        "disable": "/servicesNS/nobody/launcher/data/inputs/tcp/raw/514/disable"
+      },
+      "author": "nobody",
+      "acl": {
+        "app": "launcher",
+        "can_list": true,
+        "can_write": true,
+        "modifiable": false,
+        "owner": "nobody",
+        "perms": {
+          "read": [
+            "admin",
+            "power",
+            "splunk-system-role",
+            "user"
+          ],
+          "write": [
+            "admin",
+            "splunk-system-role"
+          ]
+        },
+        "removable": true,
+        "sharing": "app"
+      },
+      "content": {
+        "_rcvbuf": 1572864,
+        "connection_host": "dns",
+        "disabled": false,
+        "eai:acl": null,
+        "group": "listenerports",
+        "host": "splunk",
+        "host_resolved": "splunk",
+        "index": "default",
+        "sourcetype": "kong-log"
+      }
+    }
+  ],
+  "paging": {
+    "total": 1,
+    "perPage": 30,
+    "offset": 0
+  },
+  "messages": []
+}

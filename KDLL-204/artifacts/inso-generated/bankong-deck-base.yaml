@@ -1,0 +1,56 @@
+_format_version: "3.0"
+services:
+- host: localhost
+  name: Transactions_API_of_BanKonG
+  path: /api/v1/
+  port: 3000
+  protocol: http
+  routes:
+  - methods:
+    - GET
+    name: Transactions_API_of_BanKonG-listTranactions
+    paths:
+    - ~/transactions$
+    strip_path: false
+    tags:
+    - OAS3_import
+    - OAS3file_bankong-openapi.yaml
+  - methods:
+    - POST
+    name: Transactions_API_of_BanKonG-initiate_a_a_tranaction
+    paths:
+    - ~/transactions$
+    strip_path: false
+    tags:
+    - OAS3_import
+    - OAS3file_bankong-openapi.yaml
+  - methods:
+    - GET
+    name: Transactions_API_of_BanKonG-getTransaction
+    paths:
+    - ~/transactions/(?<id>[^\/]+)$
+    strip_path: false
+    tags:
+    - OAS3_import
+    - OAS3file_bankong-openapi.yaml
+  - methods:
+    - PATCH
+    name: Transactions_API_of_BanKonG-changeTransaction
+    paths:
+    - ~/transactions/(?<id>[^\/]+)$
+    strip_path: false
+    tags:
+    - OAS3_import
+    - OAS3file_bankong-openapi.yaml
+  - methods:
+    - DELETE
+    name: Transactions_API_of_BanKonG-cancelTransaction
+    paths:
+    - ~/transactions/(?<id>[^\/]+)$
+    strip_path: false
+    tags:
+    - OAS3_import
+    - OAS3file_bankong-openapi.yaml
+  tags:
+  - OAS3_import
+  - OAS3file_bankong-openapi.yaml

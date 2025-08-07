@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: kong
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:16.1.1
+        args: ["-Dkeycloak.profile.feature.upload_scripts=enabled"]
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_VENDOR
+          value: "H2"
+        - name: KEYCLOAK_USER
+          value: "admin"
+        - name: KEYCLOAK_PASSWORD
+          value: "admin"
+        - name: KEYCLOAK_IMPORT
+          # value: "/home/ubuntu/KGIL-202/oidc/kong_realm_template.json"
+          value: "/data/oidc/kong_realm_template.json"
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        volumeMounts:
+        - name: kong-course-data
+          mountPath: /data
+      volumes:
+      - name: kong-course-data
+        hostPath:
+          path: /mnt/host-ubuntu/KGIL-202
+          type: Directory
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: kong
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: keycloak
+  type: ClusterIP

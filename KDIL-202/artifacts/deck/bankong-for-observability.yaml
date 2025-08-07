@@ -1,0 +1,250 @@
+_format_version: "3.0"
+_konnect:
+  runtime_group_name: training
+consumer_groups:
+- name: premium_consumers
+  plugins:
+  - config:
+      consumer_groups: null
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      enforce_consumer_groups: false
+      error_code: 429
+      error_message: API rate limit exceeded
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      limit:
+      - 100
+      namespace: YA7ndLpsxdf052T4B4A18P4Q2I55oA8j
+      path: null
+      redis:
+        cluster_addresses: null
+        connect_timeout: null
+        database: 0
+        host: null
+        keepalive_backlog: null
+        keepalive_pool_size: 30
+        password: null
+        port: null
+        read_timeout: null
+        send_timeout: null
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      window_size:
+      - 60
+      window_type: sliding
+    name: rate-limiting-advanced
+- name: standard_consumers
+  plugins:
+  - config:
+      consumer_groups: null
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      enforce_consumer_groups: false
+      error_code: 429
+      error_message: API rate limit exceeded
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      limit:
+      - 30
+      namespace: fu4PU7XHACFLOkxXKUaxFdZEJSD5NMkD
+      path: null
+      redis:
+        cluster_addresses: null
+        connect_timeout: null
+        database: 0
+        host: null
+        keepalive_backlog: null
+        keepalive_pool_size: 30
+        password: null
+        port: null
+        read_timeout: null
+        send_timeout: null
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      window_size:
+      - 60
+      window_type: sliding
+    name: rate-limiting-advanced
+consumers:
+- groups:
+  - name: premium_consumers
+  keyauth_credentials:
+  - key: premiumConsumerKey
+  username: premiumConsumer
+- groups:
+  - name: standard_consumers
+  keyauth_credentials:
+  - key: standardConsumerKey
+  username: standardConsumer
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: ${{ env "DECK_FQDN" }}
+  name: Mockbin_API_of_BanKonG
+  port: 8888
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: echo-route
+    path_handling: v0
+    paths:
+    - /echo-request
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+    tags:
+    - bankong-api-tag
+    - marketing-tag
+  tags:
+  - bankong-api-tag
+  - marketing-tag
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: ${{ env "DECK_FQDN" }}
+  name: Transactions_API_of_BanKonG
+  path: /api/v1/
+  plugins:
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      run_on_preflight: true
+    enabled: true
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 3000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - DELETE
+    name: Transactions_API_of_BanKonG-cancelTransaction
+    path_handling: v0
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - OAS3_import
+  - https_redirect_status_code: 426
+    methods:
+    - PATCH
+    name: Transactions_API_of_BanKonG-changeTransaction
+    path_handling: v0
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - OAS3_import
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: Transactions_API_of_BanKonG-getTransaction
+    path_handling: v0
+    paths:
+    - ~/transactions/(?<id>[^/]+)$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - OAS3_import
+  - https_redirect_status_code: 426
+    methods:
+    - POST
+    name: Transactions_API_of_BanKonG-initiate_a_transaction
+    path_handling: v0
+    paths:
+    - ~/transactions$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - OAS3_import
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: Transactions_API_of_BanKonG-listTranactions
+    path_handling: v0
+    paths:
+    - ~/transactions$
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+    tags:
+    - OAS3_import
+  tags:
+  - OAS3_import
+  write_timeout: 60000

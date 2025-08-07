@@ -1,0 +1,56 @@
+_format_version: "1.1"
+services:
+- connect_timeout: 60000
+  # host: ${{ env "DECK_FQDN" }}
+  host: httpbin.org
+  name: bankong-canary-api-service
+  path: /xml
+  # port: 8889
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  write_timeout: 60000
+  routes:
+  - name: bankong-canary-api-route
+    paths:
+    - /api/canary
+    path_handling: v0
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    strip_path: true
+    https_redirect_status_code: 426
+    request_buffering: true
+    response_buffering: true
+    plugins:
+    - name: key-auth
+      config:
+        anonymous: null
+        hide_credentials: false
+        key_in_body: false
+        key_in_header: true
+        key_in_query: true
+        key_names:
+        - apikey
+        run_on_preflight: true
+      enabled: true
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+consumers:
+- username: general-consumer
+  keyauth_credentials:
+  - key: general-api
+  acls:
+  - group: general-acl
+- username: vip-consumer
+  keyauth_credentials:
+  - key: vip-api
+  acls:
+  - group: vip-acl
+ 

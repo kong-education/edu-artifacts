@@ -1,0 +1,193 @@
+version: '3'
+
+networks:
+  kong-net:
+    name: kong-net
+    driver: bridge
+
+volumes:
+  kong_data: {}
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    hostname: postgres
+    command: -c ssl=on
+             -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+             -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+    restart: on-failure
+    networks:
+    - kong-net
+    ports:
+    - "5432:5432/tcp"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    stdin_open: true
+    tty: true
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_USER: kong
+      POSTGRES_PG_TIMEOUT: 60000
+
+  kong-migrations:
+    networks:
+    - kong-net
+    image: kong/kong-gateway:2.8-alpine
+    container_name: kong-migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: kong migrations bootstrap
+    restart: on-failure
+    environment:
+      KONG_PG_SSL: 'on'
+      KONG_PG_SSL_VERIFY: 'off'
+      KONG_PG_SSL_VERSION: 'tlsv1_3'
+      KONG_PG_SSL_REQUIRED: 'on'
+      KONG_DATABASE: postgres
+      KONG_PASSWORD: admin
+      KONG_PG_DATABASE: kong
+      KONG_PG_HOST: postgres
+      KONG_PG_PASSWORD: kong
+      KONG_PG_USER: kong
+      KONG_LICENSE_DATA: $KONG_LICENSE_DATA
+  
+  kong-migrations-up:
+    networks:
+    - kong-net
+    image: kong/kong-gateway:2.8-alpine
+    container_name: kong-migrations-up
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: kong migrations up && kong migrations finish
+    restart: on-failure
+    environment:
+      KONG_PG_SSL: 'on'
+      KONG_PG_SSL_VERIFY: 'off'
+      KONG_PG_SSL_VERSION: 'tlsv1_3'
+      KONG_PG_SSL_REQUIRED: 'on'
+      KONG_DATABASE: postgres
+      KONG_PASSWORD: password
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+      KONG_PG_HOST: postgres
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_LICENSE_DATA: $KONG_LICENSE_DATA
+
+  kong:
+    image: kong/kong-gateway:2.8-alpine
+    container_name: kong
+    hostname: kong
+    networks:
+    - kong-net
+    ports:
+    - "8000-8006:8000-8006/tcp"
+    - "8443-8447:8443-8447/tcp"
+    - "8100:8100/tcp"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+    command: kong start --nginx-conf /tmp/custom_nginx.template
+    volumes:
+    - ${PWD}/custom_nginx.template:/tmp/custom_nginx.template
+   #- /etc/ssl/certs/server.cer:/etc/ssl/certs/server.cer
+   #- /etc/ssl/private/server.key:/etc/ssl/private/server.key
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 12s
+      timeout: 12s
+      retries: 12
+    entrypoint: ["/docker-entrypoint.sh", "kong", "docker-start", "--vv"]
+    environment:
+      KONG_PG_SSL: 'on'
+      KONG_PG_SSL_VERIFY: 'off'
+      KONG_PG_SSL_VERSION: 'tlsv1_3'
+      KONG_PG_SSL_REQUIRED: 'on'
+      KONG_LICENSE_DATA: $KONG_LICENSE_DATA
+      KONG_STATUS_LISTEN: 0.0.0.0:8100
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+     #KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_LOG_LEVEL: debug
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+     #KONG_ADMIN_GUI_SSL_CERT: /etc/ssl/certs/server.cer
+     #KONG_ADMIN_GUI_SSL_CERT_KEY: /etc/ssl/private/server.key
+      KONG_ADMIN_API_URI: http://localhost:8001
+     #KONG_ADMIN_SSL_CERT: /etc/ssl/certs/server.cer
+     #KONG_ADMIN_SSL_CERT_KEY: /etc/ssl/private/server.key
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PLUGINS: bundled
+      KONG_AUDIT_LOG: "on"
+      KONG_PASSWORD: password
+     #KONG_ENFORCE_RBAC: "on"
+     #KONG_ADMIN_GUI_AUTH: basic-auth
+     #KONG_ADMIN_GUI_SESSION_CONF: >
+     #  {"secret":"kong",
+     #   "cookie_name":"kong_cookie",
+     #   "cookie_secure":false}
+      KONG_VITALS: "off"
+      KONG_PORTAL: "on"
+      KONG_PORTAL_AUTH: "basic-auth"
+      KONG_PORTAL_SESSION_CONF: >
+        {"cookie_name":"portal_session",
+         "secret": "CHANGE_THIS",
+         "storage":"kong",
+         "cookie_secure":false,
+         "cookie_lifetime":36000}
+      KONG_PORTAL_GUI_LISTEN: 0.0.0.0:8003
+      KONG_PORTAL_GUI_HOST: localhost:8003
+      KONG_PORTAL_GUI_PROTOCOL: http
+     #KONG_PORTAL_GUI_SSL_CERT: /etc/ssl/certs/server.cer
+     #KONG_PORTAL_GUI_SSL_CERT_KEY: /etc/ssl/private/server.key
+      KONG_PORTAL_API_LISTEN: 0.0.0.0:8004
+     #KONG_PORTAL_API_SSL_CERT: /etc/ssl/certs/server.cer
+     #KONG_PORTAL_API_SSL_CERT_KEY: /etc/ssl/private/server.key
+      KONG_PORTAL_CORS_ORIGINS: "*"
+      KONG_PORTAL_EMAILS_FROM: noreply@konghq.com
+      KONG_PORTAL_EMAILS_REPLY_TO: noreply@konghq.com
+      KONG_PORTAL_AUTO_APPROVE: "on"
+      KONG_SMTP_MOCK: "off"
+      KONG_SMTP_HOST: smtp.gmail.com
+      KONG_SMTP_PORT: 587
+      KONG_SMTP_AUTH_TYPE: plain
+      KONG_SMTP_STARTTLS: "on"
+      KONG_SMTP_USERNAME: kongemailtest@gmail.com
+      KONG_SMTP_PASSWORD: jNzjktweewwYiQdpd2jymXV
+      KONG_SMTP_ADMIN_EMAILS: noreply@konghq.com
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_GUI_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_GUI_ERROR_LOG: /dev/stderr
+      KONG_PORTAL_API_ACCESS_LOG: /dev/stdout
+      KONG_PORTAL_API_ERROR_LOG: /dev/stderr
+      KONG_PORTAL_GUI_ACCESS_LOG: /dev/stdout
+      KONG_PORTAL_GUI_ERROR_LOG: /dev/stderr
+      KONG_STATUS_ACCESS_LOG: /dev/stdout
+      KONG_STATUS_ERROR_LOG: /dev/stderr
+
+# mockbin:
+#   networks:
+#   - kong-net
+#   image: "mashape/mockbin"
+#   container_name: mockbin
+#   hostname: mockbin
+#   healthcheck:
+#     test: ["CMD-SHELL", "exit 0"]
+#     interval: 15s
+#     timeout: 15s
+#     retries: 25
+#   ports:
+#   - "8888:8080/tcp"

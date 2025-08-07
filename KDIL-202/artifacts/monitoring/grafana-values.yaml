@@ -1,0 +1,30 @@
+image:
+  tag: 8.3.0
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 3000
+  nodePort: 30005
+
+adminPassword: admin
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      access: proxy
+      isDefault: true
+
+grafana.ini:
+  auth:
+    # Optional: Disable the login form (set to false if you want to keep it)
+    disable_login_form: true
+  auth.anonymous:
+    # Enable anonymous access
+    enabled: true
+    # Set the role for anonymous users (Admin, Editor, or Viewer)
+    org_role: Admin

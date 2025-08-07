@@ -1,0 +1,20 @@
+image:
+  tag: 8.3.0
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 3000
+  nodePort: 30005
+
+adminPassword: admin
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      access: proxy
+      isDefault: true

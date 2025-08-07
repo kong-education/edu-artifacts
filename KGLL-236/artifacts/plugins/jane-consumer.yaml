@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jane-key-auth
+  labels:
+    konghq.com/credential: key-auth
+stringData:
+  key: jane-key
+---
+piVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: jane
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: jane
+credentials:
+- jane-key-auth

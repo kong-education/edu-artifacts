@@ -1,0 +1,122 @@
+deployment:
+  test:
+    enabled: false
+
+controller:
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: "2.12"
+  proxy:
+  enabled: true
+
+  deployment:
+    kong:
+      enabled: false
+
+  ingressController:
+    enabled: true
+    env:
+      publish_service: kong/kong-gateway-proxy
+      kong_admin_token:
+        valueFrom:
+          secretKeyRef:
+            name: kong-enterprise-superuser-password
+            key: password
+    gatewayDiscovery:
+      enabled: true
+      generateAdminApiService: true
+
+  podAnnotations:
+    kuma.io/gateway: enabled
+    # This port must match your Kong admin API port. 8444 is the default.
+    # If you set gateway.admin.tls.containerPort, change these annotations
+    # to use that value.
+    traffic.kuma.io/exclude-outbound-ports: "8444"
+    traffic.sidecar.istio.io/excludeOutboundPorts: "8444"
+
+gateway:
+  env:
+    database: "off"
+    role: "traditional"
+    status_listen: 0.0.0.0:8100
+    password:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
+    admin_gui_url: ${KONG_ADMIN_GUI_URL}
+    admin_gui_api_url: ${KONG_ADMIN_GUI_API_URL}
+    proxy_url: ${KONG_PROXY_URL}
+    admin_gui_ssl_cert:  /etc/secrets/kong-manager-tls/tls.crt
+    admin_gui_ssl_cert_key:  /etc/secrets/kong-manager-tls/tls.key
+    admin_ssl_cert: /etc/secrets/kong-admin-tls/tls.crt
+    admin_ssl_cert_key:  /etc/secrets/kong-admin-tls/tls.key
+    ssl_cert: /etc/secrets/kong-proxy-tls/tls.crt
+    ssl_cert_key:  /etc/secrets/kong-proxy-tls/tls.key
+  proxy:
+    http:
+      enabled: true
+      nodePort: 30000
+    tls:
+      enabled: true
+      nodePort: 30443
+    type: NodePort
+    ingress:
+      enabled: true
+  enterprise:
+    enabled: true
+    rbac:
+      enabled: false
+    smtp:
+      enabled: false
+    license_secret: kong-enterprise-license
+    portal:
+      enabled: false
+  admin:
+    enabled: true
+    type: NodePort
+    http:
+      enabled: true
+      nodePort: 30001
+    tls:
+      enabled: true
+      nodePort: 30501
+    ingress:
+      enabled: true
+  manager:
+    enabled: true
+    type: NodePort
+    http:
+      nodePort: 30002
+    tls:
+      enabled: true
+      nodePort: 30500
+    ingress:
+      enabled: true
+  secretVolumes:
+    - kong-cluster-cert
+    - kong-manager-tls
+    - kong-admin-tls
+    - kong-proxy-tls
+  
+  readinessProbe:
+    httpGet:
+      path: "/status"
+  
+  status:
+    enabled: true
+    type: ClusterIP
+
+  image:
+    repository: kong/kong-gateway
+    tag: "3.6.1.1"
+  enabled: true
+  deployment:
+    kong:
+      enabled: true
+
+
+
+  ingressController:
+    enabled: false
+

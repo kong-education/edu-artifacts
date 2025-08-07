@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-edu
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-experience
+  namespace: kong-edu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-experience
+  template:
+    metadata:
+      labels:
+        app: kongair-experience
+    spec:
+      containers:
+      - name: kongair-experience
+        image: kongedu/kongair-experience:1.0
+        ports:
+        - containerPort: 4000
+        env:
+        - name: HOSTNAME
+          value: "experience.kongair"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-experience
+  namespace: kong-edu
+spec:
+  selector:
+    app: kongair-experience
+  ports:
+    - protocol: TCP
+      port: 5050
+      targetPort: 4000
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-customers
+  namespace: kong-edu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-customers
+  template:
+    metadata:
+      labels:
+        app: kongair-customers
+    spec:
+      containers:
+      - name: kongair-customers
+        image: kongedu/kongair-customers:1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: HOSTNAME
+          value: "customers.kongair"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-customers
+  namespace: kong-edu
+spec:
+  selector:
+    app: kongair-customers
+  ports:
+    - protocol: TCP
+      port: 5051
+      targetPort: 3000
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-routes
+  namespace: kong-edu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-routes
+  template:
+    metadata:
+      labels:
+        app: kongair-routes
+    spec:
+      containers:
+      - name: kongair-routes
+        image: kongedu/kongair-routes:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: HOSTNAME
+          value: "routes.kongair"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-routes
+  namespace: kong-edu
+spec:
+  selector:
+    app: kongair-routes
+  ports:
+    - protocol: TCP
+      port: 5053
+      targetPort: 8080
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-bookings
+  namespace: kong-edu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-bookings
+  template:
+    metadata:
+      labels:
+        app: kongair-bookings
+    spec:
+      containers:
+      - name: kongair-bookings
+        image: kongedu/kongair-bookings:1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: HOSTNAME
+          value: "bookings.kongair"
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-bookings
+  namespace: kong-edu
+spec:
+  selector:
+    app: kongair-bookings
+  ports:
+    - protocol: TCP
+      port: 5054
+      targetPort: 3000
+  clusterIP: None

@@ -1,0 +1,62 @@
+version: '2.2'
+
+networks:
+  kong-konnect:
+    name: kong-konnect
+    driver: bridge
+
+services:
+  mockbin:
+    networks:
+    - kong-konnect
+    image: mashape/mockbin:latest
+    container_name: mockbin.bankong
+    hostname: ${FQDN}
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 30s
+      retries: 3        
+    restart: on-failure
+    ports:
+    - "8888:8080/tcp"
+
+# BanKonG
+  bankong-frontend:
+   networks:
+   - kong-konnect
+   image: svenwal/bankong-frontend:1.1.7
+   container_name: bankong-frontend
+   hostname: frontend.bankong
+   restart: on-failure
+   ports:
+    - 29080:8080
+  bankong-backend-transactions:
+   networks:
+   - kong-konnect
+   image: svenwal/bankong-backend-transactions:0.3.3
+   container_name: bankong-backend-transactions
+   hostname: backend-transactions.bankong
+   restart: on-failure
+   ports:
+    - 3000:3000
+   environment:
+     BACKEND_REGION: your home
+     BACKEND_DATACENTER: local laptop
+     BACKEND_ARCHITECTURE: docker-compose
+  bankong-backend-orders:
+   networks:
+   - kong-konnect
+   image: svenwal/bankong-backend-orders:0.2.0
+   container_name: bankong-backend-orders
+   hostname: backend-orders.bankong
+   restart: on-failure
+
+  httpbin:
+    container_name: httpbin.bankong
+    hostname: httpbin.bankong
+    networks:
+    - kong-konnect
+    image: kennethreitz/httpbin:latest
+    ports:
+    - "8889:80/tcp"

@@ -1,0 +1,151 @@
+ingressController:
+  enabled: true
+  installCRDs: false
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: "2.2"
+  env:
+    publish_service: kong-dp/kong-dp-kong-proxy
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password
+deployment:
+  kong:
+    enabled: true
+    daemonset: false
+  userDefinedVolumes:
+    - name: "nginx-kong-lua"
+      configMap:
+        name: nginx-kong-lua
+  userDefinedVolumeMounts:
+    - name: "nginx-kong-lua"
+      mountPath: "/usr/local/share/lua/5.1/kong/templates/nginx_kong.lua"
+      subPath: "nginx_kong.lua"
+image:
+  repository: kong/kong-gateway
+  tag: "2.7-alpine"
+env:
+  audit_log: "on"
+  vitals: on
+  # vitals_strategy: prometheus
+  # vitals_statsd_address: statsd-prometheus-statsd-exporter.monitoring.svc.cluster.local:9125
+  # vitals_tsdb_address: prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+  database: "postgres"
+  role: "control_plane"
+  cluster_cert: "/etc/secrets/kong-cluster-cert/tls.crt"
+  cluster_cert_key: "/etc/secrets/kong-cluster-cert/tls.key"
+  status_listen: 0.0.0.0:8100
+  portal_gui_protocol: "https"
+  portal_auth: basic-auth
+  portal_session_conf:
+    valueFrom:
+      secretKeyRef:
+        name: kong-portal-session-config
+        key: portal_session_conf
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+  admin_gui_url: ${KONG_ADMIN_GUI_URL}
+  admin_api_uri: ${KONG_ADMIN_API_URI}
+  proxy_url: ${KONG_PROXY_URL}
+  portal_api_url: ${KONG_PORTAL_API_URL}
+  portal_gui_host: ${KONG_PORTAL_GUI_HOST}
+  admin_api_url: ${KONG_ADMIN_API_URL}
+  portal_gui_ssl_cert:  /etc/secrets/kong-manager-tls/tls.crt
+  portal_gui_ssl_cert_key:  /etc/secrets/kong-manager-tls/tls.key
+  admin_gui_ssl_cert:  /etc/secrets/kong-manager-tls/tls.crt
+  admin_gui_ssl_cert_key:  /etc/secrets/kong-manager-tls/tls.key
+  admin_ssl_cert: /etc/secrets/kong-admin-tls/tls.crt
+  admin_ssl_cert_key:  /etc/secrets/kong-admin-tls/tls.key
+cluster:
+  enabled: true
+  tls:
+    enabled: true
+    servicePort: 8005
+    containerPort: 8005
+clustertelemetry:
+  enabled: true
+  tls:
+    enabled: true
+    servicePort: 8006
+    containerPort: 8006
+proxy:
+  enabled: false
+admin:
+  enabled: true
+  labels:
+    enable-metrics: "true"
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30001
+  tls:
+    enabled: true
+    nodePort: 30501
+  ingress:
+    enabled: true
+enterprise:
+  enabled: true
+  rbac:
+    enabled: false
+  smtp:
+    enabled: false
+  license_secret: kong-enterprise-license
+  portal:
+    enabled: true
+  ingress:
+    enabled: true
+manager:
+  enabled: true
+  type: NodePort
+  http:
+    nodePort: 30002
+  tls:
+    enabled: true
+    nodePort: 30500
+  # tls:
+  #   enabled: false
+  ingress:
+    enabled: true
+secretVolumes:
+  - kong-cluster-cert
+  - kong-manager-tls
+  - kong-admin-tls
+  - kong-portal-tls
+postgresql:
+  enabled: true
+  postgresqlUsername: kong
+  postgresqlDatabase: kong
+  postgresqlPassword: kong
+portal:
+  enabled: true
+  type: NodePort
+  http:
+    enabled: true
+    nodePort: 30003
+  tls:
+    enabled: true
+    nodePort: 30446
+  ingress:
+    enabled: true
+portalapi:
+  enabled: true
+  http:
+    enabled: true
+    nodePort: 30004
+  tls:
+    enabled: true
+    nodePort: 30444
+  type: NodePort
+  ingress:
+    enabled: true
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+status:
+  enabled: true
+  type: ClusterIP

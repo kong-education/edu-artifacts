@@ -1,0 +1,46 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP  # Mapped to KONG_MESH_KIC for HTTP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP  # Mapped to KONG_MESH_KIC for HTTPS
+  - containerPort: 8080
+    hostPort: 8080
+    protocol: TCP  # Mapped to KONG_MESH_GATEWAY for HTTP
+  - containerPort: 8443
+    hostPort: 8443
+    protocol: TCP  # Mapped to KONG_MESH_GATEWAY for HTTPS
+  - containerPort: 30001 
+    hostPort: 30001
+    protocol: TCP # Mapped to KUMA_MULTIZONE_GLOBAL_KDS_GRPC_PORT
+  - containerPort: 30002
+    hostPort: 30002
+    protocol: TCP # Mapped to KUMA_API_SERVER_HTTP_PORT
+  - containerPort: 30003
+    hostPort: 30003
+    protocol: TCP # Mapped to KUMA_API_SERVER_HTTPS_PORT
+  - containerPort: 30004
+    hostPort: 30004
+    protocol: TCP # Mapped to Ingress for K8s Zone
+  - containerPort: 30101
+    hostPort: 30101
+    protocol: TCP  # Mapped to Prometheus
+  - containerPort: 30102
+    hostPort: 30102
+    protocol: TCP  # Mapped to Grafana
+
+    # We can leverage KIND’s extraPortMapping config option
+    # when creating a cluster to forward ports from the host
+    # to KIC/Gateway & for inter-host communication:
+    # https://kind.sigs.k8s.io/docs/user/ingress/

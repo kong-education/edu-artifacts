@@ -1,0 +1,50 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  namespace: kong-mesh-system
+  name: kic-to-frontend
+spec:
+  targetRef:
+    kind: MeshService
+    name: frontend_kong-mesh-demo_svc_8088
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          kuma.io/service: kic-kong-proxy_kong_svc_80
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  namespace: kong-mesh-system
+  name: frontend-to-backend
+spec:
+  targetRef:
+    kind: MeshService
+    name: backend_kong-mesh-demo_svc_3001
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          kuma.io/service: frontend_kong-mesh-demo_svc_8088
+      default:
+        action: Allow
+---
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  namespace: kong-mesh-system
+  name: backend-to-postgres
+spec:
+  targetRef:
+    kind: MeshService
+    name: postgres_kong-mesh-demo_svc_5432
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          kuma.io/service: backend_kong-mesh-demo_svc_3001
+      default:
+        action: Allow

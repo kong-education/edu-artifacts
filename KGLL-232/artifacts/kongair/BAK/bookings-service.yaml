@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-bookings
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-bookings
+  template:
+    metadata:
+      labels:
+        app: kongair-bookings
+    spec:
+      containers:
+      - name: kongair-bookings
+        image: ghcr.io/battlebyte/kongair-bookings:latest
+        ports:
+        - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-bookings
+spec:
+  selector:
+    app: kongair-bookings
+  ports:
+  - protocol: TCP
+    port: 8082
+    targetPort: 8082

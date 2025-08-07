@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: Mock API
+  description: An API for testing and mocking, secured by API Key Authentication.
+  version: 1.0.0
+  contact:
+    url: "http://mockbin.org"
+
+servers:
+  - url: "{protocol}://$KONNECT_GATEWAY/mock"
+    variables:
+      protocol:
+        enum:
+          - http
+        default: http
+
+paths:
+  /agent:
+    get:
+      summary: Returns user agent
+      responses:
+        '200':
+          description: User agent details
+          content:
+            application/json:
+              example:
+                agent: "Mozilla/5.0"
+              schema:
+                type: object
+                properties:
+                  userAgent:
+                    type: string
+
+  /echo:
+    get:
+      summary: Returns an echo of the request
+      responses:
+        '200':
+          description: Echo response
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: "Echoes the Received Data"
+      description: "Returns the data received in the request."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                foo:
+                  type: string
+                bar:
+                  type: integer
+      responses:
+        "200":
+          description: "Successful Response"
+          content:
+            application/json:
+              example:
+                foo: "hello"
+                bar: 123
+
+  /headers:
+    get:
+      summary: Returns request headers
+      responses:
+        '200':
+          description: Headers of the request
+          content:
+            application/json:
+              example:
+                Host: "mockbin.org"
+                Accept-Encoding: "gzip"
+              schema:
+                type: object
+                properties:
+                  headers:
+                    type: object
+                    additionalProperties:
+                      type: string
+
+  /ip:
+    get:
+      summary: Returns the requester's IP address
+      responses:
+        '200':
+          description: IP address details
+          content:
+            application/json:
+              example:
+                ip: "192.168.1.1"
+              schema:
+                type: object
+                properties:
+                  ip:
+                    type: string
+
+  /request:
+    get:
+      summary: Returns request details
+      responses:
+        '200':
+          description: Details of the request
+          content:
+            application/json:
+              example:
+                method: "GET"
+                url: "/request"
+                headers:
+                  Host: "mockbin.org"
+              schema:
+                type: object
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apiKey
+
+security:
+  - ApiKeyAuth: []
+
+schemas: {}

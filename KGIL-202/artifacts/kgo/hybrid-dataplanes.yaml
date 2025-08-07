@@ -1,0 +1,40 @@
+apiVersion: gateway-operator.konghq.com/v1beta1
+kind: DataPlane
+metadata:
+  name: kong-dp
+  namespace: hybrid
+spec:
+  deployment:
+    replicas: 2
+    podTemplateSpec:
+      spec:
+        containers:
+        - name: proxy
+          image: kong/kong-gateway:3.6.1.1
+          env:
+          - name: KONG_ROLE
+            value: data_plane
+          - name: KONG_CLUSTER_MTLS
+            value: "shared"
+          - name: KONG_CLUSTER_CERT
+            value: "/etc/secrets/kong-cluster-tls/tls.crt"
+          - name: KONG_CLUSTER_CERT_KEY
+            value: "/etc/secrets/kong-cluster-tls/tls.key"
+          - name: KONG_LUA_SSL_TRUSTED_CERTIFICATE
+            value: "system"
+          - name: KONG_CLUSTER_CONTROL_PLANE
+            value: "edukong-kong-cluster.hybrid.svc.cluster.local:8005"
+          - name: KONG_CLUSTER_TELEMETRY_ENDPOINT
+            value: "edukong-kong-clustertelemetry.hybrid.svc.cluster.local:8006"
+          volumeMounts:
+          - name: cluster-certificate
+            mountPath: /var/cluster-certificate
+          - name: kong-cluster-tls
+            mountPath: /etc/secrets/kong-cluster-tls/
+            readOnly: true
+        volumes:
+        - name: cluster-certificate
+        - name: kong-cluster-tls
+          secret:
+            secretName: "kong-cluster-tls"
+            defaultMode: 420

@@ -1,0 +1,24 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshFaultInjection
+metadata:
+  name: fi-backendv0
+  namespace: kong-mesh-system
+  labels:
+    kuma.io/mesh: default
+spec:
+  targetRef:
+    kind: MeshSubset
+    proxyTypes: ["Sidecar"]
+    tags:
+      app: kong-mesh-demo-backend
+      version: v0
+  from:
+  - targetRef:
+      kind: MeshSubset
+      tags:
+        kuma.io/service: frontend_kong-mesh-demo_svc_8088
+    default:
+      http:
+      - abort:
+          httpStatus: 500
+          percentage: 50

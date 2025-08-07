@@ -1,0 +1,57 @@
+ingressController:
+  enabled: false
+image:
+  repository: kong/kong-gateway
+  tag: "3.4"
+env:
+  database: "off"
+  role: "data_plane"
+  cluster_cert: "/etc/secrets/kong-cluster-cert/tls.crt"
+  cluster_cert_key: "/etc/secrets/kong-cluster-cert/tls.key"
+  ssl_cert: /etc/secrets/kong-proxy-tls/tls.crt
+  ssl_cert_key:  /etc/secrets/kong-proxy-tls/tls.key
+  status_listen: 0.0.0.0:8100
+  lua_ssl_trusted_certificate: "/etc/secrets/kong-cluster-cert/tls.crt"
+  cluster_control_plane: "kong-kong-cluster.kong.svc.cluster.local:8005"
+  cluster_telemetry_endpoint: kong-kong-clustertelemetry.kong.svc.cluster.local:8006
+proxy:
+  http:
+    enabled: true
+    nodePort: 30000
+  labels:
+    enable-metrics: "true"
+  tls:
+    enabled: true
+    nodePort: 30443
+  type: NodePort
+
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  rbac:
+    enabled: false
+  smtp:
+    enabled: false
+  portal:
+    enabled: false
+manager:
+  enabled: false
+secretVolumes:
+- kong-cluster-cert
+- kong-proxy-tls
+portal:
+  enabled: false
+portalapi:
+  enabled: false
+admin:
+  enabled: false
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+status:
+  enabled: true
+  type: ClusterIP
+
+readinessProbe:
+  httpGet:
+    path: "/status"

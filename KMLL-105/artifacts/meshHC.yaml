@@ -1,0 +1,28 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshHealthCheck
+metadata:
+  name: backend-to-db-check
+  namespace: kong-mesh-system
+  labels:
+    kuma.io/mesh: default
+spec:
+  targetRef:
+    kind: MeshSubset
+    tags:
+      kuma.io/service: backend_kong-mesh-demo_svc_3001
+  to:
+  - targetRef:
+      kind: MeshService
+      name: postgres_kong-mesh-demo_svc_5432
+    default:
+      interval: 1s
+      timeout: 2s
+      unhealthyThreshold: 1
+      healthyThreshold: 5
+      failTrafficOnPanic: true
+      alwaysLogHealthCheckFailures: true
+      tcp:
+        send: Zm9v
+        receive:
+        - YmFy
+        - YmF6

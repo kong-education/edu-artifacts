@@ -1,0 +1,37 @@
+# The following env vars are used across all the set*.sh scripts
+
+# source ~/.lab_vars
+source /home/ubuntu/.envs
+
+# Set Color Codes
+blk=$(tput -T screen setaf 0)
+red=$(tput -T screen setaf 1)
+grn=$(tput -T screen setaf 2)
+ylw=$(tput -T screen setaf 3)
+blu=$(tput -T screen setaf 4)
+mag=$(tput -T screen setaf 5)
+cyn=$(tput -T screen setaf 6)
+wit=$(tput -T screen setaf 7)
+nrm=$(tput -T screen sgr0)
+
+# Set Konnect API Endpoints
+# KDOMAIN="https://us.api.konghq.tech"
+KDOMAIN="https://us.api.konghq.com"
+KAPI="$KDOMAIN/v2"
+
+# This is the control plane used throughout the training
+CP_NAME="training"
+
+PATFILE="/home/ubuntu/.pat"
+# PATFILE="/home/ubuntu/$KONG_COURSE_ID/.pat"
+# PATFILE="/home/ubuntu/.lab_vars"
+# export DECK_KONNECT_TOKEN=$MYPAT
+# export DECK_KONNECT_TOKEN=$(cat $PATFILE)
+
+GATEWAY_VERSION="3.4"
+
+# Data plane name used in Helm
+DPNAME=kong-dp
+
+# CRTFILE="/etc/secrets/kong-cluster-cert/tls.crt"
+# KEYFILE="/etc/secrets/kong-cluster-cert/tls.key"

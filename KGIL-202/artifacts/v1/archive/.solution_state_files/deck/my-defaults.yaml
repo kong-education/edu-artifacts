@@ -1,0 +1,13 @@
+_format_version: "3.0"
+_info:
+  defaults:
+    service:
+      connect_timeout: 60000
+      enabled: true
+      read_timeout: 60000
+      retries: 5
+    route:
+      regex_priority: 0
+      request_buffering: true
+      response_buffering: true
+      strip_path: false

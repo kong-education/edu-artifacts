@@ -1,0 +1,26 @@
+proxy:
+  type: NodePort
+  http:
+    enabled: true
+    containerPort: 8000
+    servicePort: 8000
+    hostPort: 8000
+  tls:
+    enabled: true
+    containerPort: 8443
+    servicePort: 8443
+    hostPort: 8443
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Equal
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Equal
+    effect: NoSchedule
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: "0%"
+    maxUnavailable: "100%"

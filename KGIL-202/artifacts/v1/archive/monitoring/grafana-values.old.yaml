@@ -1,0 +1,9 @@
+# We are pinning the version due to a cors issue with Strigo
+image:
+  tag: 8.3.0
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 3000
+  nodePort: 30005

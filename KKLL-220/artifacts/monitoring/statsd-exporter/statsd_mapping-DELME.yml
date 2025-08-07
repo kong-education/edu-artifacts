@@ -1,0 +1,39 @@
+# Basic mapping configuration for StatsD metrics
+mappings:
+  # Example: app.response_time -> app_response_time
+  - match: "app.response_time"
+    name: "app_response_time_seconds"
+    timer_type: histogram
+    labels:
+      service: "web"
+  
+  # Example: app.*.requests -> app_requests_total with service label
+  - match: "app.*.requests"
+    name: "app_requests_total"
+    labels:
+      service: "$1"
+  
+  # Example: app.*.errors -> app_errors_total with service label
+  - match: "app.*.errors"
+    name: "app_errors_total"
+    labels:
+      service: "$1"
+  
+  # Example: database.*.query_time -> database_query_time_seconds
+  - match: "database.*.query_time"
+    name: "database_query_time_seconds"
+    timer_type: histogram
+    labels:
+      database: "$1"
+  
+  # Generic counter pattern
+  - match: "*.*.count"
+    name: "${1}_${2}_total"
+    labels:
+      type: "counter"
+  
+  # Generic gauge pattern
+  - match: "*.*.gauge"
+    name: "${1}_${2}"
+    labels:
+      type: "gauge"

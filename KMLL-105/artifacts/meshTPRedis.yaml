@@ -1,0 +1,16 @@
+apiVersion: kuma.io/v1alpha1
+kind: MeshTrafficPermission
+metadata:
+  namespace: kong-mesh-system
+  name: backckend-to-redis
+spec:
+  targetRef:
+    kind: MeshService
+    name: redis_kong-mesh-demo_svc_6379
+  from:
+    - targetRef:
+        kind: MeshSubset
+        tags:
+          kuma.io/service: backend_kong-mesh-demo_svc_3001
+      default:
+        action: Allow

@@ -1,0 +1,160 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-flights
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-flights
+  template:
+    metadata:
+      labels:
+        app: kongair-flights
+    spec:
+      containers:
+      - name: kongair-flights
+        image: ghcr.io/battlebyte/kongair-flights:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-flights
+spec:
+  selector:
+    app: kongair-flights
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-routes
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-routes
+  template:
+    metadata:
+      labels:
+        app: kongair-routes
+    spec:
+      containers:
+      - name: kongair-routes
+        image: ghcr.io/battlebyte/kongair-routes:latest
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-routes
+spec:
+  selector:
+    app: kongair-routes
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-customer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-customer
+  template:
+    metadata:
+      labels:
+        app: kongair-customer
+    spec:
+      containers:
+      - name: kongair-customer
+        image: ghcr.io/battlebyte/kongair-customer:latest
+        ports:
+        - containerPort: 8083
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-customer
+spec:
+  selector:
+    app: kongair-customer
+  ports:
+  - protocol: TCP
+    port: 8083
+    targetPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-bookings
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-bookings
+  template:
+    metadata:
+      labels:
+        app: kongair-bookings
+    spec:
+      containers:
+      - name: kongair-bookings
+        image: ghcr.io/battlebyte/kongair-bookings:latest
+        ports:
+        - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-bookings
+spec:
+  selector:
+    app: kongair-bookings
+  ports:
+  - protocol: TCP
+    port: 8082
+    targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-experience
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kongair-experience
+  template:
+    metadata:
+      labels:
+        app: kongair-experience
+    spec:
+      containers:
+      - name: kongair-experience
+        image: ghcr.io/battlebyte/kongair-experience:latest
+        ports:
+        - containerPort: 8084
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-experience
+spec:
+  selector:
+    app: kongair-experience
+  ports:
+  - protocol: TCP
+    port: 8084
+    targetPort: 8084
+

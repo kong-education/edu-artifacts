@@ -1,0 +1,39 @@
+image:
+  repository: kong
+  tag: "3.5"
+
+admin:
+  enabled: false
+
+manager:
+  enabled: false
+  
+nodeSelector:
+  ingress-ready: 'true'
+  
+proxy:
+  type: NodePort
+  http:
+    enabled: true
+    containerPort: 8000
+    servicePort: 80
+    hostPort: 80
+  tls:
+    enabled: true
+    containerPort: 8443
+    servicePort: 443
+    hostPort: 443
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Equal
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Equal
+    effect: NoSchedule
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: "0%"
+    maxUnavailable: "100%"

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kongair-routes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kongair-routes
+  template:
+    metadata:
+      labels:
+        app: kongair-routes
+    spec:
+      containers:
+      - name: kongair-routes
+        image: kongedu/kongair-routes:1.0
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongair-routes
+  labels:
+    app: kongair-routes
+spec:
+  selector:
+    app: kongair-routes
+  ports:
+    - protocol: TCP
+      targetPort: 8080
+      port: 5053

@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Wait for INIT script to complete
+while [ ! -f /home/ubuntu/.initcomplete ] ; do sleep 1; done
+
+source ~/$KONG_COURSE_ID/setScriptConfig
+
+# Validate PAT
+# source ~/$KONG_COURSE_ID/setPAT.sh
+DECK_KONNECT_TOKEN=$(cat $PATFILE)
+
+# Create control plane and read endpoints to env vars
+source ~/$KONG_COURSE_ID/setRTG.sh
+export KONG_CLUSTER_CONTROL_PLANE=$(https GET $KAPI/runtime-groups --auth-type=bearer --auth=$DECK_KONNECT_TOKEN | jq -r '.data[] | select(.name ==  "'$CP_NAME'") | .config.control_plane_endpoint' | cut -c 9-)
+export KONG_CLUSTER_TELEMETRY_ENDPOINT=$(https GET $KAPI/runtime-groups --auth-type=bearer --auth=$DECK_KONNECT_TOKEN | jq -r '.data[] | select(.name == "'$CP_NAME'") | .config.telemetry_endpoint' | cut -c 9-)
+
+# Get RTG ID
+CPID=$(cat $RTGIDF)
+
+# CK=$(cat /etc/kong/ssl/cluster.crt)
+# https POST $KAPI/runtime-groups/$RTGID/dp-client-certificates cert="$CK" --auth-type=bearer --auth=$DECK_KONNECT_TOKEN 
+
+# Create verificates
+openssl req -new -x509 -nodes -newkey rsa:2048 -subj "/CN=kongdp/C=US" -keyout /home/ubuntu/$KONG_COURSE_ID/tls.key -out /home/ubuntu/$KONG_COURSE_ID/tls.crt
+
+# Reformat the certificate into a single line for the API call:
+export CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' tls.crt)
+export KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' tls.key)
+
+# POST the certificate to your control plane  using the Konnect API:
+# echo '{"cert":"'$CERT'"}' | http POST https://us.api.konghq.com/v2/runtime-groups/$CPID/dp-client-certificates --auth-type=bearer --auth=$DECK_KONNECT_TOKEN 
+
+# https POST https://us.api.konghq.com/v2/runtime-groups/$CPID/dp-client-certificates cert="$CERT" --auth-type=bearer --auth=$DECK_KONNECT_TOKEN
+
+# kind delete cluster
+
+kind create cluster --config kind.yaml
+
+kubectl create namespace kong
+
+# kubectl create secret tls kong-cluster-cert \
+#     -n kong \
+#     --cert=/etc/kong/ssl/cluster.crt \
+#     --key=/etc/kong/ssl/cluster.key
+
+# Reformat the certificate into a single line for the API call:
+export CERT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' /etc/secrets/kong-cluster-cert/tls.crt)
+export KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' /etc/secrets/kong-cluster-cert/tls.key)
+
+kubectl create secret tls kong-cluster-cert3 \
+    -n kong \
+    --cert=/etc/secrets/kong-cluster-cert/tls.crt \
+    --key=/etc/secrets/kong-cluster-cert/tls.key
+
+helm repo add kong https://charts.konghq.com
+helm repo update
+helm install my-kong-dp2 kong/kong -n kong --values ~/$KONG_COURSE_ID/values2.yaml
+
+# helm install kong-dp kong/kong \
+#     -n kong \
+#     --set KONG_CLUSTER_CONTROL_PLANE=$KONG_CLUSTER_CONTROL_PLANE \
+#     --set KONG_CLUSTER_TELEMETRY_ENDPOINT=$KONG_CLUSTER_TELEMETRY_ENDPOINT \
+#     --values ~/$KONG_COURSE_ID/values1.yaml
+
+
+#   cluster_control_plane: "$KONG_CLUSTER_CONTROL_PLANE:443"
+#   cluster_server_name: "$KONG_CLUSTER_CONTROL_PLANE"
+#   cluster_telemetry_endpoint: "$KONG_CLUSTER_TELEMETRY_ENDPOINT:443"
+#   cluster_telemetry_server_name: "$KONG_CLUSTER_TELEMETRY_ENDPOINT"
+# helm upgrade -f ./base/cp-values.yaml kong kong/kong -n kong \
+# --set manager.ingress.hostname=$FQDN \
+# --set portal.ingress.hostname=$FQDN \
+# --set admin.ingress.hostname=$FQDN \
+# --set portalapi.ingress.hostname=$FQDN 
+
+
+# helm delete kong/kong -n kong
+
+kubectl get pod -n kong
+kubectl get pod -n kong -w
+kubectl -n kong patch service my-kong-kong-proxy --patch-file=patch-proxy.yaml
+
+

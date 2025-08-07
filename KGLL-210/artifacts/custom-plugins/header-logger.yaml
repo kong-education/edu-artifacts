@@ -1,0 +1,4 @@
+plugins:
+  - name: header-logger
+    config:
+      file_path: '/var/log/kong/header-logger.out'

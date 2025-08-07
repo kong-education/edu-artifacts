@@ -1,0 +1,7 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 60000
+  host: example.com
+  name: foo
+  port: 443
+

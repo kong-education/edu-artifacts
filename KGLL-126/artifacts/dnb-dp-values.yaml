@@ -1,0 +1,55 @@
+# Do not use Kong Ingress Controller
+ingressController:
+ enabled: false
+  
+image:
+ repository: kong/kong-gateway
+ tag: "3.6.0.0"
+  
+# Mount the secret created earlier
+secretVolumes:
+ - kong-cluster-cert
+ - kong-proxy-tls
+
+env:
+ # data_plane nodes do not have a database
+ role: data_plane
+ database: "off"
+ proxy_url: ${KONG_PROXY_URL}
+
+  
+ # Tell the data plane how to connect to the control plane
+ cluster_control_plane: kongcp-kong-cluster.kongcp.svc.cluster.local:8005
+ cluster_telemetry_endpoint: kongcp-kong-clustertelemetry.kongcp.svc.cluster.local:8006
+ ssl_cert: /etc/secrets/kong-proxy-tls/tls.crt
+ ssl_cert_key:  /etc/secrets/kong-proxy-tls/tls.key
+  
+ # Configure control plane / data plane authentication
+ lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
+ cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+ cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  
+# Enterprise functionality
+enterprise:
+ enabled: true
+ license_secret: kong-enterprise-license
+  
+# The data plane handles proxy traffic only
+proxy:
+ enabled: true
+ http:
+  enabled: true
+  nodePort: 30000
+ tls:
+  enabled: true
+  nodePort: 30443
+ type: NodePort
+ #ingress:
+  #enabled: true
+  
+# These roles are served by the kong-cp deployment
+admin:
+ enabled: false
+  
+manager:
+ enabled: false

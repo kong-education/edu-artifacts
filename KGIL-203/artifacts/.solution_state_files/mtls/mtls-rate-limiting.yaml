@@ -1,0 +1,10 @@
+plugins:
+- name: rate-limiting
+  config: 
+    minute: 5
+    policy: local
+- name: rate-limiting
+  consumer: demo@example.com
+  config: 
+    minute: 10
+    policy: local

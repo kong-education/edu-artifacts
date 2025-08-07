@@ -1,0 +1,10 @@
+plugins:
+- name: key-auth
+  service: Transactions_API_of_BanKonG
+  config:
+    key_names:
+    - x-api-key
+    key_in_header: true
+    key_in_query: true
+    key_in_body: false
+    anonymous: anonymous_user

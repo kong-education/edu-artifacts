@@ -1,0 +1,29 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: employee
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: employee
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: openid-connect-httpbin
+plugin: openid-connect
+config:
+  consumer_claim: 
+  - preferred_username
+  issuer: ${KEYCLOAK_CONFIG_ISSUER}
+  issuers_allowed: 
+  - ${KEYCLOAK_URL}/auth/realms/kong
+  redirect_uri: 
+  - ${KEYCLOAK_REDIRECT_URI}
+  client_id:
+  - kong
+  client_secret:
+  - ${CLIENT_SECRET}
+  ssl_verify: false
+  response_mode: form_post
+  introspection_check_active: false

@@ -1,0 +1,67 @@
+deployment:
+  test:
+    enabled: false
+
+controller:
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: "2.12"
+  proxy:
+  enabled: true
+
+  deployment:
+    kong:
+      enabled: false
+
+  ingressController:
+    enabled: true
+
+gateway:
+  enabled: true
+  env:
+    database: "off"
+    role: "traditional"
+    status_listen: 0.0.0.0:8100
+    proxy_url: ${KONG_PROXY_URL}
+    ssl_cert: /etc/secrets/kong-proxy-tls/tls.crt
+    ssl_cert_key:  /etc/secrets/kong-proxy-tls/tls.key
+  proxy:
+    http:
+      enabled: true
+      nodePort: 30000
+    tls:
+      enabled: true
+      nodePort: 30443
+    type: NodePort
+    ingress:
+      enabled: true
+  enterprise:
+    enabled: true
+    rbac:
+      enabled: false
+    smtp:
+      enabled: false
+    license_secret: kong-enterprise-license
+    portal:
+      enabled: false
+  admin:
+    enabled: true
+    type: ClusterIP
+  secretVolumes:
+    - kong-proxy-tls
+  
+  readinessProbe:
+    httpGet:
+      path: "/status"
+  
+  status:
+    enabled: true
+    type: ClusterIP
+  
+  deployment:
+    kong:
+      enabled: true
+
+  ingressController:
+    enabled: false
+

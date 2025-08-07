@@ -1,0 +1,21 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: exit-transformer-httpbin
+plugin: exit-transformer
+config:
+  functions:
+  - |
+    -- transform.lua
+        return function(status, body, headers)
+          if not body or not body.message then
+            return status, body, headers
+          end
+          headers = { ["X-Transform-Header"] = "Exit Transformer Plugin Triggered" }
+          local new_body = {
+            error = true,
+            status = status,
+            message =  "***WARNING: " .. body.message .. "***",
+          }
+          return status, new_body, headers
+        end

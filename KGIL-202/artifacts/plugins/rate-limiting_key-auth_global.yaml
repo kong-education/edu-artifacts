@@ -1,0 +1,35 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin # Using KongClusterPlugin as we're applying it globally
+plugin: key-auth
+metadata:
+  name: key-auth-global
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  key_names:
+  - x-api-key
+  key_in_header: true
+  key_in_query: true
+  key_in_body: true
+  anonymous: anonymous_user
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongClusterPlugin
+plugin: rate-limiting-advanced
+metadata:
+  name: rate-limiting-advanced-global
+  annotations:
+    kubernetes.io/ingress.class: kong
+  labels:
+    global: "true"
+config:
+  limit:
+  - 10
+  window_size:
+  - 30
+  identifier: consumer
+  sync_rate: -1
+  strategy: local
+  window_type: sliding

@@ -1,0 +1,18 @@
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30006
+  prometheusSpec:
+    # serviceMonitorSelectorNilUsesHelmValues: false
+    additionalScrapeConfigs:
+    - job_name: prometheus
+      static_configs:
+      - targets:
+        - localhost:9090
+    - job_name: statsd-exporter
+      scrape_interval: "5s"
+      static_configs:
+      - targets: ["statsd-prometheus-statsd-exporter.monitoring.svc.cluster.local:9102"]
+grafana:
+  # We are installing grafana separately 
+  enabled: false

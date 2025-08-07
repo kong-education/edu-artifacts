@@ -1,0 +1,11 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: key-auth-flights
+plugin: key-auth
+config:
+  key_names:
+  - x-api-key
+  key_in_header: true
+  key_in_query: false
+  key_in_body: false

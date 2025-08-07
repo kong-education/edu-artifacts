@@ -1,0 +1,256 @@
+image:
+  repository: kong/kong-gateway
+  #tag: 2.4-alpine
+  #tag: 2.5.0.1-alpine
+  #tag: 2.8.4.2
+  #tag: 3.0.0.0-ubuntu
+  #tag: 2.8.2.3-rhel
+  #tag: 3.2.1.0-rhel
+  tag: 3.6.1.3
+
+  pullSecrets:
+    - kong-enterprise-edition-docker
+
+env:
+  admin_gui_listen: 0.0.0.0:8002, 0.0.0.0:8445 ssl
+  admin_listen: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+  status_listen: 0.0.0.0:8100
+  debug_listen: 0.0.0.0:8200
+  prefix: /kong_prefix/
+  database: "postgres"
+  pg_host: edukong-postgresql
+  pg_user: kong
+  pg_password: kong
+  pg_database: kong
+  log_level: debug
+  #audit_log: on
+  admin_gui_auth_conf_secret: kong-session-config
+  portal_gui_listen: 0.0.0.0:8003, 0.0.0.0:8446 ssl
+  portal_gui_protocol: https
+  db_update_frequency: 30
+  db_update_propagation: 15
+  tracing_instrumentations: "off"
+  tracing_sampling_rate: 1
+  nginx_worker_processes: 2
+  nginx_main_worker_rlimit_nofile: 16384
+  router_flavor: traditional_compatible
+  nginx_http_lua_regex_cache_max_entries: 8192
+  #portal_session_conf: '{"cookie_name":"portal_session","cookie_samesite":"Lax","secret":"Jfa071890!","cookie_secure":true,"storage":"kong","cookie_domain":".jeffykong.com"}'
+  untrusted_lua: "on"
+  allow_debug_header: on
+  portal_email_verification: on
+  plugins: bundled
+  role: control_plane
+  cluster_mtls: shared
+  cluster_cert: /etc/secrets/kong-cluster-tls/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-tls/tls.key
+  cluster_listen: 0.0.0.0:8005 ssl
+  cluster_telemetry_listen: 0.0.0.0:8006 ssl
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: kong-enterprise-superuser-password
+        key: password
+
+secretVolumes:
+- kong-cluster-tls
+  
+
+
+
+replicaCount: 1
+
+deployment:
+  kong:
+    # Enable or disable Kong itself
+    # Setting this to false with ingressController.enabled=true will create a
+    # controller-only release.
+    enabled: true
+    # Use a DaemonSet controller instead of a Deployment controller
+    daemonset: false
+
+nameOverride: kong
+
+proxy:
+  enabled: false
+  type: LoadBalancer
+  annotations:
+    konghq.com/protocol: "https"
+
+  http:
+    enabled: false
+    servicePort: 80
+    containerPort: 8000
+    #parameters:
+      #- http
+  tls:
+    enabled: false
+    servicePort: 443
+    containerPort: 8443
+    parameters:
+      - http2
+
+  resources:
+    limits:
+      cpu: 2000m
+    requests:
+      cpu: 50m
+
+admin:
+  enabled: true
+  type: NodePort
+  annotations:
+    konghq.com/protocol: "https"
+
+  http:
+    enabled: true
+    servicePort: 8001
+    containerPort: 8001
+    parameters:
+      - http
+
+  tls:
+    enabled: true
+    servicePort: 8444
+    containerPort: 8444
+    parameters:
+      - http2
+
+  externalIPs: []
+# Enable/disable migration jobs, and set annotations for them
+migrations:
+  # Enable pre-upgrade migrations (run "kong migrations up")
+  preUpgrade: true
+  # Enable post-upgrade migrations (run "kong migrations finish")
+  postUpgrade: true
+  # Annotations to apply to migrations jobs
+  # By default, these disable service mesh sidecar injection for Istio and Kuma,
+  # as the sidecar containers do not terminate and prevent the jobs from completing
+  annotations:
+    sidecar.istio.io/inject: false
+    kuma.io/sidecar-injection: "disabled"
+
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: true
+  portal:
+    enabled: true
+  rbac:
+    enabled: false
+
+manager:
+  enabled: false
+  type: NodePort
+  annotations:
+    konghq.com/protocol: "https"
+
+  http:
+    enabled: true
+    servicePort: 8002
+    containerPort: 8002
+
+  tls:
+    enabled: true
+    servicePort: 8445
+    containerPort: 8445
+    parameters:
+      - http2
+      - https
+
+portal:
+  enabled: false
+  type: LoadBalancer
+  annotations:
+    konghq.com/protocol: "https"
+
+  http:
+    enabled: false
+    servicePort: 80
+    containerPort: 8003
+    parameters: []
+
+  tls:
+    enabled: false
+    servicePort: 443
+    containerPort: 8446
+    parameters:
+      - http2
+
+portalapi:
+  enabled: false
+  type: LoadBalancer
+  annotations:
+    konghq.com/protocol: "https"
+
+  http:
+    enabled: false
+    servicePort: 80
+    containerPort: 8004
+    parameters: []
+
+  tls:
+    enabled: false
+    servicePort: 443
+    containerPort: 8447
+    parameters:
+      - http2
+
+cluster:
+  enabled: true
+  # To specify annotations or labels for the cluster service, add them to the respective
+  # "annotations" or "labels" dictionaries below.
+  annotations: {}
+  #  service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+  labels: {}
+
+  tls:
+    enabled: true
+    servicePort: 8005
+    containerPort: 8005
+    parameters: []
+
+  type: ClusterIP
+
+clustertelemetry:
+  enabled: true
+  # To specify annotations or labels for the cluster telemetry service, add them to the respective
+  # "annotations" or "labels" dictionaries below.
+  annotations: {}
+  #  service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+  labels: {}
+
+  tls:
+    enabled: true
+    servicePort: 8006
+    containerPort: 8006
+    parameters: []
+
+  type: ClusterIP
+
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    password: kong
+    database: kong
+  image:
+    tag: 13.6.0-debian-10-r52
+  service:
+    ports:
+      postgresql: "5432"
+
+ingressController:
+  enabled: false
+  installCRDs: false
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: "3.1.3"
+  env:
+    kong_admin_url: "https://localhost:8444"
+    kong_admin_token:
+      valueFrom:
+        secretKeyRef:
+          name: kong-enterprise-superuser-password
+          key: password

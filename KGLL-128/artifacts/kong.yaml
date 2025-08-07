@@ -1,0 +1,1430 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: kubecon-kong-ai
+consumers:
+- keyauth_credentials:
+  - key: consumer1
+  plugins:
+  - config:
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      error_code: 429
+      error_hide_providers: false
+      error_message: 'API rate limit exceeded for provider(s): '
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      llm_providers:
+      - limit: 50
+        name: openai
+        window_size: 60
+      path: null
+      redis:
+        cluster_addresses: null
+        cluster_max_redirections: 5
+        cluster_nodes: null
+        connect_timeout: 2000
+        connection_is_proxied: false
+        database: 0
+        host: redis
+        keepalive_backlog: null
+        keepalive_pool_size: 256
+        password: null
+        port: 6379
+        read_timeout: 2000
+        send_timeout: 2000
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_nodes: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      request_prompt_count_function: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      tokens_count_strategy: total_tokens
+      window_type: fixed
+    enabled: true
+    instance_name: AI-RateLimit-Consumer1
+    name: ai-rate-limiting-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  username: consumer1
+- keyauth_credentials:
+  - key: consumer2
+  plugins:
+  - config:
+      dictionary_name: kong_rate_limiting_counters
+      disable_penalty: false
+      error_code: 429
+      error_hide_providers: false
+      error_message: 'API rate limit exceeded for provider(s): '
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      llm_providers:
+      - limit: 100
+        name: openai
+        window_size: 60
+      path: null
+      redis:
+        cluster_addresses: null
+        cluster_max_redirections: 5
+        cluster_nodes: null
+        connect_timeout: 2000
+        connection_is_proxied: false
+        database: 0
+        host: 127.0.0.1
+        keepalive_backlog: null
+        keepalive_pool_size: 256
+        password: null
+        port: 6379
+        read_timeout: 2000
+        send_timeout: 2000
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_nodes: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      request_prompt_count_function: null
+      retry_after_jitter_max: 0
+      strategy: local
+      sync_rate: null
+      tokens_count_strategy: total_tokens
+      window_type: fixed
+    enabled: true
+    instance_name: AI-RateLimit-Consumer2
+    name: ai-rate-limiting-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  username: consumer2
+plugins:
+- config:
+    content_type: application/json
+    custom_fields_by_lua:
+      streams: local ts=string.format('%18.0f', os.time()*1000000000) local log_payload         =
+        kong.log.serialize() local service = log_payload['service'] or 'noService'
+        local cjson         = require "cjson" local payload_string = cjson.encode(log_payload)
+        local t         = { {stream = {gateway='ai-gateway', service=service['name']},
+        values={{ts,         payload_string}}} } return t
+    flush_timeout: 2
+    headers: {}
+    http_endpoint: http://loki:3100/loki/api/v1/push
+    keepalive: 60000
+    method: POST
+    queue:
+      concurrency_limit: 1
+      initial_retry_delay: 0.01
+      max_batch_size: 1
+      max_bytes: null
+      max_coalescing_delay: 1
+      max_entries: 10000
+      max_retry_delay: 60
+      max_retry_time: 60
+    queue_size: null
+    retry_count: null
+    timeout: 10000
+  enabled: true
+  name: http-log
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+- config:
+    ai_metrics: true
+    bandwidth_metrics: true
+    latency_metrics: true
+    per_consumer: true
+    status_code_metrics: true
+    upstream_health_metrics: true
+  enabled: true
+  name: prometheus
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-Header-Service
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - headers:
+      x-llm:
+      - gpt-3.5
+    https_redirect_status_code: 426
+    name: AI-Header-Route-gpt-3.5
+    path_handling: v0
+    paths:
+    - /routebyheader
+    plugins:
+    - config:
+        auth:
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        max_request_body_size: 8192
+        model:
+          name: gpt-3.5-turbo
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock: null
+            gemini: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        model_name_header: true
+        response_streaming: allow
+        route_type: llm/v1/chat
+      enabled: true
+      instance_name: AI-Proxy-gpt-3.5
+      name: ai-proxy
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - headers:
+      x-llm:
+      - gpt-4
+    https_redirect_status_code: 426
+    name: AI-Header-Route-gpt-4
+    path_handling: v0
+    paths:
+    - /routebyheader
+    plugins:
+    - config:
+        auth:
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        max_request_body_size: 8192
+        model:
+          name: gpt-4
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock: null
+            gemini: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        model_name_header: true
+        response_streaming: allow
+        route_type: llm/v1/chat
+      enabled: true
+      instance_name: AI-Proxy-gpt-4
+      name: ai-proxy
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-LB-Semantic
+  plugins:
+  - config:
+      balancer:
+        algorithm: semantic
+        connect_timeout: 60000
+        hash_on_header: X-Kong-LLM-Request-ID
+        latency_strategy: tpot
+        read_timeout: 60000
+        retries: 5
+        slots: 10000
+        tokens_count_strategy: total-tokens
+        write_timeout: 60000
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      max_request_body_size: 8192
+      model_name_header: true
+      targets:
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: model to answer questions on Kong the API management company
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-4
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 100
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: model to answer questions on movies
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-3.5-turbo-0125
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 100
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.8
+    enabled: true
+    instance_name: AI-Proxy-Advanced-Semantic
+    name: ai-proxy-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-LB-Semantic-Route
+    path_handling: v0
+    paths:
+    - /semantic-lb
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-LB-Service
+  plugins:
+  - config:
+      balancer:
+        algorithm: round-robin
+        connect_timeout: 60000
+        hash_on_header: X-Kong-LLM-Request-ID
+        latency_strategy: tpot
+        read_timeout: 60000
+        retries: 5
+        slots: 10000
+        tokens_count_strategy: total-tokens
+        write_timeout: 60000
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: null
+          header_value: null
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      max_request_body_size: 8192
+      model_name_header: true
+      targets:
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-4
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 100
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-3.5-turbo-0125
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 100
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.1
+    enabled: true
+    instance_name: AI-Proxy-Advanced-Round-Robin
+    name: ai-proxy-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-LB-Route
+    path_handling: v0
+    paths:
+    - /openai-chat
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-LB-Weighted-Service
+  plugins:
+  - config:
+      balancer:
+        algorithm: round-robin
+        connect_timeout: 60000
+        hash_on_header: X-Kong-LLM-Request-ID
+        latency_strategy: tpot
+        read_timeout: 60000
+        retries: 5
+        slots: 10000
+        tokens_count_strategy: total-tokens
+        write_timeout: 60000
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: null
+          header_value: null
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      max_request_body_size: 8192
+      model_name_header: true
+      targets:
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-4
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: 4500000
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: 4000000
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 1
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        description: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-3.5-turbo-0125
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: 3500000
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: 3000000
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 3
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.1
+    enabled: true
+    instance_name: AI-Proxy-Advanced-Round-Robin-Weighted
+    name: ai-proxy-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-LB-Weighted-Route
+    path_handling: v0
+    paths:
+    - /openai-weighted
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-PromptGuard-Service
+  plugins:
+  - config:
+      auth:
+        aws_access_key_id: null
+        aws_secret_access_key: null
+        azure_client_id: null
+        azure_client_secret: null
+        azure_tenant_id: null
+        azure_use_managed_identity: false
+        gcp_service_account_json: null
+        gcp_use_service_account: false
+        header_name: Authorization
+        header_value: Bearer $OpenAPIToken
+        param_location: null
+        param_name: null
+        param_value: null
+      logging:
+        log_payloads: true
+        log_statistics: true
+      max_request_body_size: 8192
+      model:
+        name: gpt-4
+        options:
+          anthropic_version: null
+          azure_api_version: "2023-05-15"
+          azure_deployment_id: null
+          azure_instance: null
+          bedrock: null
+          gemini: null
+          input_cost: null
+          llama2_format: null
+          max_tokens: 256
+          mistral_format: null
+          output_cost: null
+          temperature: null
+          top_k: null
+          top_p: null
+          upstream_path: null
+          upstream_url: null
+        provider: openai
+      model_name_header: true
+      response_streaming: allow
+      route_type: llm/v1/chat
+    enabled: true
+    name: ai-proxy
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      rules:
+        allow_prompts:
+        - Only allow questions related to Kong the API company
+        deny_prompts: null
+        match_all_conversation_history: false
+        match_all_roles: false
+        max_request_body_size: 8192
+      search:
+        threshold: 0.5
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.7
+    enabled: true
+    name: ai-semantic-prompt-guard
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-PromptGuard-Route
+    path_handling: v0
+    paths:
+    - /promptguard
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-RateLimit-Service
+  plugins:
+  - config:
+      auth:
+        aws_access_key_id: null
+        aws_secret_access_key: null
+        azure_client_id: null
+        azure_client_secret: null
+        azure_tenant_id: null
+        azure_use_managed_identity: false
+        gcp_service_account_json: null
+        gcp_use_service_account: false
+        header_name: Authorization
+        header_value: Bearer $OpenAPIToken
+        param_location: null
+        param_name: null
+        param_value: null
+      logging:
+        log_payloads: true
+        log_statistics: true
+      max_request_body_size: 8192
+      model:
+        name: gpt-4
+        options:
+          anthropic_version: null
+          azure_api_version: "2023-05-15"
+          azure_deployment_id: null
+          azure_instance: null
+          bedrock: null
+          gemini: null
+          input_cost: null
+          llama2_format: null
+          max_tokens: 256
+          mistral_format: null
+          output_cost: null
+          temperature: null
+          top_k: null
+          top_p: null
+          upstream_path: null
+          upstream_url: null
+        provider: openai
+      model_name_header: true
+      response_streaming: allow
+      route_type: llm/v1/chat
+    enabled: true
+    instance_name: AI-Proxy-RateLimit
+    name: ai-proxy
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      realm: null
+      run_on_preflight: true
+    enabled: true
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-RL-Route
+    path_handling: v0
+    paths:
+    - /ratelimit
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-SDK-Service
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-SDK-Route
+    path_handling: v0
+    paths:
+    - ~/chat/completions$
+    plugins:
+    - config:
+        auth:
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        max_request_body_size: 8192
+        model:
+          name: null
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock: null
+            gemini: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        model_name_header: true
+        response_streaming: allow
+        route_type: llm/v1/chat
+      enabled: true
+      instance_name: AI-Proxy-SDK
+      name: ai-proxy
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: localhost
+  name: AI-Semantic-Cache-Service
+  plugins:
+  - config:
+      auth:
+        aws_access_key_id: null
+        aws_secret_access_key: null
+        azure_client_id: null
+        azure_client_secret: null
+        azure_tenant_id: null
+        azure_use_managed_identity: false
+        gcp_service_account_json: null
+        gcp_use_service_account: false
+        header_name: Authorization
+        header_value: Bearer $OpenAPIToken
+        param_location: null
+        param_name: null
+        param_value: null
+      logging:
+        log_payloads: true
+        log_statistics: true
+      max_request_body_size: 8192
+      model:
+        name: gpt-4
+        options:
+          anthropic_version: null
+          azure_api_version: "2023-05-15"
+          azure_deployment_id: null
+          azure_instance: null
+          bedrock: null
+          gemini: null
+          input_cost: null
+          llama2_format: null
+          max_tokens: 256
+          mistral_format: null
+          output_cost: null
+          temperature: null
+          top_k: null
+          top_p: null
+          upstream_path: null
+          upstream_url: null
+        provider: openai
+      model_name_header: true
+      response_streaming: allow
+      route_type: llm/v1/chat
+    enabled: false
+    name: ai-proxy
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      balancer:
+        algorithm: round-robin
+        connect_timeout: 60000
+        hash_on_header: X-Kong-LLM-Request-ID
+        latency_strategy: tpot
+        read_timeout: 60000
+        retries: 5
+        slots: 10000
+        tokens_count_strategy: total-tokens
+        write_timeout: 60000
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: ' Bearer $OpenAPIToken'
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      max_request_body_size: 8192
+      model_name_header: true
+      targets:
+      - auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: ' Bearer $OpenAPIToken'
+          param_location: null
+          param_name: null
+          param_value: null
+        description: null
+        logging:
+          log_payloads: true
+          log_statistics: true
+        model:
+          name: gpt-4
+          options:
+            anthropic_version: null
+            azure_api_version: "2023-05-15"
+            azure_deployment_id: null
+            azure_instance: null
+            bedrock:
+              aws_region: null
+            gemini:
+              api_endpoint: null
+              location_id: null
+              project_id: null
+            input_cost: null
+            llama2_format: null
+            max_tokens: 256
+            mistral_format: null
+            output_cost: null
+            temperature: null
+            top_k: null
+            top_p: null
+            upstream_path: null
+            upstream_url: null
+          provider: openai
+        route_type: llm/v1/chat
+        weight: 100
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.7
+    enabled: true
+    instance_name: AI-Proxy-Advanced-Cache
+    name: ai-proxy-advanced
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      cache_control: false
+      cache_ttl: 60
+      embeddings:
+        auth:
+          allow_override: false
+          aws_access_key_id: null
+          aws_secret_access_key: null
+          azure_client_id: null
+          azure_client_secret: null
+          azure_tenant_id: null
+          azure_use_managed_identity: false
+          gcp_service_account_json: null
+          gcp_use_service_account: false
+          header_name: Authorization
+          header_value: Bearer $OpenAPIToken
+          param_location: null
+          param_name: null
+          param_value: null
+        model:
+          name: text-embedding-3-large
+          options: null
+          provider: openai
+      exact_caching: false
+      ignore_assistant_prompts: false
+      ignore_system_prompts: false
+      message_countback: 1
+      stop_on_failure: false
+      vectordb:
+        dimensions: 1024
+        distance_metric: cosine
+        redis:
+          cluster_addresses: null
+          cluster_max_redirections: 5
+          cluster_nodes: null
+          connect_timeout: 2000
+          connection_is_proxied: false
+          database: 0
+          host: redis
+          keepalive_backlog: null
+          keepalive_pool_size: 256
+          password: null
+          port: 6379
+          read_timeout: 2000
+          send_timeout: 2000
+          sentinel_addresses: null
+          sentinel_master: null
+          sentinel_nodes: null
+          sentinel_password: null
+          sentinel_role: null
+          sentinel_username: null
+          server_name: null
+          ssl: false
+          ssl_verify: false
+          timeout: 2000
+          username: null
+        strategy: redis
+        threshold: 0.7
+    enabled: true
+    name: ai-semantic-cache
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 32000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AI-Route
+    path_handling: v0
+    paths:
+    - /openai
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

@@ -1,0 +1,358 @@
+<form theme="dark">
+  <label>Kong API Dashboard Classic</label>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="time1" searchWhenChanged="true">
+      <label>Global Time</label>
+      <default>
+        <earliest>-15m</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="servicetoken" searchWhenChanged="true">
+      <label>Services</label>
+      <fieldForLabel>service.name</fieldForLabel>
+      <fieldForValue>service.name</fieldForValue>
+      <search>
+        <query>sourcetype="kong-log" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*") response.status="$statustoken$" | stats count by "service.name"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="routetoken" searchWhenChanged="true">
+      <label>Routes</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>route.name</fieldForLabel>
+      <fieldForValue>route.name</fieldForValue>
+      <search>
+        <query>sourcetype="kong-log" service.name="$servicetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$"  | stats count by "route.name"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="dropdown" token="consumertoken" searchWhenChanged="true">
+      <label>Consumers</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>consumer.username</fieldForLabel>
+      <fieldForValue>consumer.username</fieldForValue>
+      <search>
+        <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" response.status="$statustoken$"  | stats count by "consumer.username"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+    <input type="dropdown" token="statustoken" searchWhenChanged="true">
+      <label>Status</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>response.status</fieldForLabel>
+      <fieldForValue>response.status</fieldForValue>
+      <search>
+        <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  | stats count by "response.status"</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Requests</title>
+      <single>
+        <title>Total API Requests</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | stats count</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">53</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[10000,20000,30000,40000]</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Request Latency</title>
+      <single>
+        <title>Average Request Latency</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | stats avg("latencies.request")</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5,10,15]</option>
+        <option name="refresh.display">preview</option>
+        <option name="unit">ms</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Proxy Latency</title>
+      <single>
+        <title>Average Proxy Latency</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | stats avg("latencies.proxy")</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5,10,15]</option>
+        <option name="refresh.display">preview</option>
+        <option name="unit">ms</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Kong Latency</title>
+      <single>
+        <title>Average Kong Latency</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | stats avg("latencies.kong")</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[5,10,15]</option>
+        <option name="unit">ms</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Requests by Service</title>
+      <chart>
+        <title>Requests by Service</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | timechart  count by "service.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Requests By Status Code</title>
+      <chart>
+        <title>Request by Status Code</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | timechart  count by "response.status"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Requests</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Bytes Transfered</title>
+      <chart>
+        <title>Bytes Transfered</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*") response.status="$statustoken$" | timechart  avg("response.size") by "service.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">Bytes</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Latency by Service</title>
+      <chart>
+        <title>Latency by Service</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | timechart  avg("latencies.request") by "service.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">ms</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Latency by Status</title>
+      <chart>
+        <title>Latency by Status</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | timechart  avg("latencies.request") by "response.status"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">ms</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Requests by Service</title>
+      <chart>
+        <title>Requests by Service</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | top showperc=f limit=5 "service.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Service Name</option>
+        <option name="charting.axisTitleY.text">Number of Requests</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Requests by Status</title>
+      <chart>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | top showperc=f limit=5 "response.status"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Service Name</option>
+        <option name="charting.axisTitleY.text">Number of Requests</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Latency by Consumer</title>
+      <chart>
+        <title>Latency by Consumer</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" |  timechart  avg("latencies.request") by "consumer.username"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Time</option>
+        <option name="charting.axisTitleY.text">ms</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Latency by Route</title>
+      <chart>
+        <title>Latency by Route</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | timechart  avg("latencies.request") by "route.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Request by Consumer</title>
+      <chart>
+        <title>Requests by Consumer</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | top showperc=f limit=5 "consumer.username"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Consumer Name</option>
+        <option name="charting.axisTitleY.text">Number of Requests</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Request by Route</title>
+      <chart>
+        <title>Requests by Route</title>
+        <search>
+          <query>sourcetype="kong-log" service.name="$servicetoken$" route.name="$routetoken$" (consumer.username="$consumertoken$" OR NOT consumer="*")  response.status="$statustoken$" | top showperc=f limit=5 "route.name"</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <refresh>30s</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.text">Route Name</option>
+        <option name="charting.axisTitleY.text">Number of Requests</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </chart>
+    </panel>
+  </row>
+</form>

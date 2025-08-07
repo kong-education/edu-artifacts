@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <description></description>
+  <title>Kong API Dashboard</title>
+  <visualizations>
+    <viz_E1siOm7u>
+      <type>viz.img</type>
+      <options>
+        <preserveAspectRatio>true</preserveAspectRatio>
+        <src>https://avatars.githubusercontent.com/u/962416?s=280&amp;v=4</src>
+      </options>
+    </viz_E1siOm7u>
+    <viz_4uGtkiYk>
+      <type>splunk.singlevalue</type>
+      <dataSources>
+        <primary>ds_7apH8kHw</primary>
+      </dataSources>
+      <title>Total Requests</title>
+      <options>
+        <majorColor>&gt; majorValue | rangeValue(majorColorEditorConfig)</majorColor>
+      </options>
+      <context>
+        <majorColorEditorConfig>
+          <to>20</to>
+          <value>#D41F1F</value>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <from>20</from>
+          <to>40</to>
+          <value>#D94E17</value>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <from>40</from>
+          <to>60</to>
+          <value>#CBA700</value>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <from>60</from>
+          <to>80</to>
+          <value>#669922</value>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <from>80</from>
+          <value>#118832</value>
+        </majorColorEditorConfig>
+      </context>
+    </viz_4uGtkiYk>
+    <viz_YLyVnupD>
+      <type>viz.column</type>
+      <dataSources>
+        <primary>ds_v1R9SZQr</primary>
+      </dataSources>
+      <title>Requests by Service</title>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Requests</axisTitleY.text>
+        <chart.stackMode>stacked</chart.stackMode>
+      </options>
+    </viz_YLyVnupD>
+    <viz_WLDfYhcB>
+      <type>splunk.singlevalue</type>
+      <dataSources>
+        <primary>ds_AHnBLTPU_ds_7apH8kHw</primary>
+      </dataSources>
+      <title>Average Request Latency</title>
+      <options>
+        <unit>ms</unit>
+        <sparklineDisplay>off</sparklineDisplay>
+        <majorColor>&gt; majorValue | rangeValue(majorColorEditorConfig)</majorColor>
+      </options>
+      <context>
+        <majorColorEditorConfig>
+          <value>#118832</value>
+          <to>50</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#669922</value>
+          <from>50</from>
+          <to>100</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#CBA700</value>
+          <from>100</from>
+          <to>200</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D94E17</value>
+          <from>200</from>
+          <to>300</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D41F1F</value>
+          <from>300</from>
+        </majorColorEditorConfig>
+      </context>
+    </viz_WLDfYhcB>
+    <viz_xciV9XpT>
+      <type>splunk.singlevalue</type>
+      <dataSources>
+        <primary>ds_ARDysQ1w_ds_7apH8kHw</primary>
+      </dataSources>
+      <title>Total Services</title>
+      <options>
+        <majorColor>&gt; majorValue | rangeValue(majorColorEditorConfig)</majorColor>
+      </options>
+      <context>
+        <majorColorEditorConfig>
+          <value>#D41F1F</value>
+          <to>1</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D94E17</value>
+          <from>1</from>
+          <to>2</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#CBA700</value>
+          <from>2</from>
+          <to>3</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#669922</value>
+          <from>3</from>
+          <to>5</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#118832</value>
+          <from>5</from>
+        </majorColorEditorConfig>
+      </context>
+    </viz_xciV9XpT>
+    <viz_qm4cXpPA>
+      <type>splunk.singlevalue</type>
+      <dataSources>
+        <primary>ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw</primary>
+      </dataSources>
+      <title>Average Kong Latency</title>
+      <options>
+        <unit>ms</unit>
+        <sparklineDisplay>off</sparklineDisplay>
+        <majorColor>&gt; majorValue | rangeValue(majorColorEditorConfig)</majorColor>
+      </options>
+      <context>
+        <majorColorEditorConfig>
+          <value>#118832</value>
+          <to>20</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#669922</value>
+          <from>20</from>
+          <to>40</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#CBA700</value>
+          <from>40</from>
+          <to>60</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D94E17</value>
+          <from>60</from>
+          <to>80</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D41F1F</value>
+          <from>80</from>
+        </majorColorEditorConfig>
+      </context>
+    </viz_qm4cXpPA>
+    <viz_IshPoBuW>
+      <type>splunk.singlevalue</type>
+      <dataSources>
+        <primary>ds_eX60F4P9_ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw</primary>
+      </dataSources>
+      <title>Average Proxy Latency</title>
+      <options>
+        <unit>ms</unit>
+        <sparklineDisplay>off</sparklineDisplay>
+        <majorColor>&gt; majorValue | rangeValue(majorColorEditorConfig)</majorColor>
+      </options>
+      <context>
+        <majorColorEditorConfig>
+          <value>#118832</value>
+          <to>50</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#669922</value>
+          <from>50</from>
+          <to>100</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#CBA700</value>
+          <from>100</from>
+          <to>200</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D94E17</value>
+          <from>200</from>
+          <to>300</to>
+        </majorColorEditorConfig>
+        <majorColorEditorConfig>
+          <value>#D41F1F</value>
+          <from>300</from>
+        </majorColorEditorConfig>
+      </context>
+    </viz_IshPoBuW>
+    <viz_V6AbS0yz>
+      <type>viz.column</type>
+      <title>Requests by Status Code</title>
+      <dataSources>
+        <primary>ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <chart.stackMode>stacked</chart.stackMode>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Requests</axisTitleY.text>
+      </options>
+    </viz_V6AbS0yz>
+    <viz_eeWNbLsr>
+      <type>viz.line</type>
+      <title>Transfered Bytes</title>
+      <dataSources>
+        <primary>ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Bytes</axisTitleY.text>
+      </options>
+    </viz_eeWNbLsr>
+    <viz_BousCbaM>
+      <type>viz.line</type>
+      <title>Latency by Service</title>
+      <dataSources>
+        <primary>ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Bytes</axisTitleY.text>
+      </options>
+    </viz_BousCbaM>
+    <viz_3Wn7QdtB>
+      <type>viz.line</type>
+      <title>Latency by Status</title>
+      <dataSources>
+        <primary>ds_odxsSlMS_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Bytes</axisTitleY.text>
+      </options>
+    </viz_3Wn7QdtB>
+    <viz_2g94uT6L>
+      <type>viz.bar</type>
+      <title>Requests by Service</title>
+      <dataSources>
+        <primary>ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+    </viz_2g94uT6L>
+    <viz_G7Fm5SaT>
+      <type>viz.bar</type>
+      <title>Requests by Status</title>
+      <dataSources>
+        <primary>ds_lRIb1uUR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+    </viz_G7Fm5SaT>
+    <viz_xpSRXDVg>
+      <type>viz.line</type>
+      <title>Latency by Consumer</title>
+      <dataSources>
+        <primary>ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Bytes</axisTitleY.text>
+      </options>
+    </viz_xpSRXDVg>
+    <viz_0XwLfsQI>
+      <type>viz.line</type>
+      <title>Latency by Route</title>
+      <dataSources>
+        <primary>ds_cv7sqXX9_ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+      <options>
+        <axisTitleX.text>Time</axisTitleX.text>
+        <axisTitleY.text>Bytes</axisTitleY.text>
+      </options>
+    </viz_0XwLfsQI>
+    <viz_1vkJJ01s>
+      <type>viz.bar</type>
+      <title>Requests by Consumer</title>
+      <dataSources>
+        <primary>ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+    </viz_1vkJJ01s>
+    <viz_rWEMVEGf>
+      <type>viz.bar</type>
+      <title>Requests by Route</title>
+      <dataSources>
+        <primary>ds_Ar545x9U_ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka</primary>
+      </dataSources>
+    </viz_rWEMVEGf>
+  </visualizations>
+  <dataSources>
+    <ds_service>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; | stats count by &quot;service.name&quot;</query>
+      </options>
+      <name>input search</name>
+    </ds_service>
+    <ds_route>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;  | stats count by &quot;route.name&quot;</query>
+      </options>
+      <name>route search</name>
+    </ds_route>
+    <ds_consumer>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;  | stats count by &quot;consumer.username&quot;</query>
+      </options>
+      <name>consumer search</name>
+    </ds_consumer>
+    <ds_status>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; | stats count by &quot;response.status&quot;</query>
+      </options>
+      <name>status search</name>
+    </ds_status>
+    <ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; | stats count</query>
+      </options>
+      <name>request_count</name>
+    </ds_7apH8kHw>
+    <ds_v1R9SZQr>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| timechart  count by &quot;service.name&quot;</query>
+      </options>
+      <name>timechart_requests_by_service</name>
+    </ds_v1R9SZQr>
+    <ds_drnO6R3z_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats count</query>
+      </options>
+      <name>Copy of request_count</name>
+    </ds_drnO6R3z_ds_7apH8kHw>
+    <ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats count</query>
+      </options>
+      <name>Copy of Copy of request_count</name>
+    </ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+    <ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats count</query>
+      </options>
+      <name>Copy of Copy of Copy of request_count</name>
+    </ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+    <ds_opayliml_ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats count</query>
+      </options>
+      <name>Copy of Copy of Copy of Copy of request_count</name>
+    </ds_opayliml_ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+    <ds_GEAiHO2i_ds_opayliml_ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats count</query>
+      </options>
+      <name>Copy of Copy of Copy of Copy of Copy of request_count</name>
+    </ds_GEAiHO2i_ds_opayliml_ds_3zeej3tX_ds_mltuj2Fh_ds_drnO6R3z_ds_7apH8kHw>
+    <ds_AHnBLTPU_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats avg(&quot;latencies.request&quot;)</query>
+      </options>
+      <name>stats_request_latency</name>
+    </ds_AHnBLTPU_ds_7apH8kHw>
+    <ds_ARDysQ1w_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats dc(&quot;service.name&quot;)</query>
+      </options>
+      <name>Copy of request_count</name>
+    </ds_ARDysQ1w_ds_7apH8kHw>
+    <ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats avg(&quot;latencies.kong&quot;)</query>
+      </options>
+      <name>stats_kong_latency</name>
+    </ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw>
+    <ds_AWWpBOoR_ds_ARDysQ1w_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats dc(&quot;service.name&quot;)</query>
+      </options>
+      <name>Copy of Copy of request_count</name>
+    </ds_AWWpBOoR_ds_ARDysQ1w_ds_7apH8kHw>
+    <ds_eX60F4P9_ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| stats avg(&quot;latencies.proxy&quot;)</query>
+      </options>
+      <name>stats_proxy_latency</name>
+    </ds_eX60F4P9_ds_W9ad0kSm_ds_AHnBLTPU_ds_7apH8kHw>
+    <ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| timechart  count by &quot;response.status&quot;</query>
+      </options>
+      <name>Search_1</name>
+    </ds_9Z9S6cka>
+    <ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| timechart  avg(&quot;response.size&quot;)</query>
+      </options>
+      <name>timechart_transfered_bytes</name>
+    </ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>timechart_latency_by_service</name>
+    </ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| top showperc=f limit=5 &quot;service.name&quot;</query>
+      </options>
+      <name>timechat_requests_by_service</name>
+    </ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_ut9UikQ7_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| top showperc=f limit=5 &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of timechat_requests_by_service</name>
+    </ds_ut9UikQ7_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_bdKoEOSa_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| top showperc=f limit=5 &quot;route.name&quot;</query>
+      </options>
+      <name>top_requests_by_route</name>
+    </ds_bdKoEOSa_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_tDRl1XVf_ds_bdKoEOSa_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot;| top showperc=f limit=5 &quot;route.name&quot;</query>
+      </options>
+      <name>Copy of top_requests_by_route</name>
+    </ds_tDRl1XVf_ds_bdKoEOSa_ds_28TOkDbZ_ds_HKeO1eVk_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;response.size&quot;)</query>
+      </options>
+      <name>transfered_bytes</name>
+    </ds_lCYkNqDH>
+    <ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>latency_by_service</name>
+    </ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_yFG08WSK_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of latency_by_service</name>
+    </ds_yFG08WSK_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | top showperc=f limit=5 &quot;service.name&quot;</query>
+      </options>
+      <name>requests_by_service_top</name>
+    </ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_b6vjc3j2_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of Copy of latency_by_service</name>
+    </ds_b6vjc3j2_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_n2HgIKvX_ds_b6vjc3j2_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of latency_by_service</name>
+    </ds_n2HgIKvX_ds_b6vjc3j2_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_2uJOgVYg_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | top showperc=f limit=5 &quot;route.name&quot;</query>
+      </options>
+      <name>Copy of requests_by_service_top</name>
+    </ds_2uJOgVYg_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_MVwwemdS_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | top showperc=f limit=5 &quot;consumer.username&quot;</query>
+      </options>
+      <name>Copy of requests_by_service_top</name>
+    </ds_MVwwemdS_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_YnvsseGd_ds_MVwwemdS_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | top showperc=f limit=5 &quot;response.status&quot;</query>
+      </options>
+      <name>Copy of Copy of requests_by_service_top</name>
+    </ds_YnvsseGd_ds_MVwwemdS_ds_EyCkYqRQ_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_ZwTNiQ4Z_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;response.status&quot;</query>
+      </options>
+      <name>Copy of latency_by_service</name>
+    </ds_ZwTNiQ4Z_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_rzVWXI8Q_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;route.name&quot;</query>
+      </options>
+      <name>Copy of latency_by_service</name>
+    </ds_rzVWXI8Q_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_d7m1Jo9q_ds_rzVWXI8Q_ds_d4MJtpXW_ds_lCYkNqDH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$ms_gH18X8zH$&quot; route.name=&quot;$dd_C0pTmmS1$&quot; consumer.username=&quot;$dd_meTDgjwb$&quot; response.status=&quot;$dd_5HPNEvyj$&quot; | timechart  avg(&quot;latencies.request&quot;) by &quot;consumer.username&quot;</query>
+      </options>
+      <name>Copy of Copy of latency_by_service</name>
+    </ds_d7m1Jo9q_ds_rzVWXI8Q_ds_d4MJtpXW_ds_lCYkNqDH>
+    <ds_RethkNA6>
+      <type>ds.search</type>
+      <options>
+        <query>source=&quot;tcp:514&quot; sourcetype=&quot;kong-log&quot; | stats count by service.name</query>
+      </options>
+      <name>service_names</name>
+    </ds_RethkNA6>
+    <ds_TdOQtybH>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot;  | stats count by service.name</query>
+      </options>
+      <name>Search_1</name>
+    </ds_TdOQtybH>
+    <ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| timechart  avg(&quot;latencies.request&quot;) by &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of timechart_transfered_bytes</name>
+    </ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_odxsSlMS_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| timechart  avg(&quot;latencies.request&quot;) by &quot;response.status&quot;</query>
+      </options>
+      <name>Copy of Copy of timechart_transfered_bytes</name>
+    </ds_odxsSlMS_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| top showperc=f limit=5 &quot;service.name&quot;</query>
+      </options>
+      <name>Copy of Copy of timechart_transfered_bytes</name>
+    </ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_lRIb1uUR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| top showperc=f limit=5 &quot;response.status&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of timechart_transfered_bytes</name>
+    </ds_lRIb1uUR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| timechart  avg(&quot;latencies.request&quot;) by &quot;consumer.username&quot;</query>
+      </options>
+      <name>Copy of Copy of timechart_transfered_bytes</name>
+    </ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_cv7sqXX9_ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| timechart  avg(&quot;latencies.request&quot;) by &quot;route.name&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of timechart_transfered_bytes</name>
+    </ds_cv7sqXX9_ds_v9pKBmqU_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| top showperc=f limit=5 &quot;consumer.username&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of timechart_transfered_bytes</name>
+    </ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_Ar545x9U_ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| top showperc=f limit=5 &quot;route.name&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of Copy of timechart_transfered_bytes</name>
+    </ds_Ar545x9U_ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+    <ds_O4IfGyWw_ds_Ar545x9U_ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+      <type>ds.search</type>
+      <options>
+        <query>sourcetype=&quot;kong-log&quot; service.name=&quot;$dd_QCWXhrAh$&quot; route.name=&quot;$dd_mvEuUmm2$&quot; consumer.username=&quot;$dd_iWUSuLMi$&quot; response.status=&quot;$dd_kBb0sFRk$&quot; 
+| top showperc=f limit=5 &quot;consumer.username&quot;</query>
+      </options>
+      <name>Copy of Copy of Copy of Copy of Copy of timechart_transfered_bytes</name>
+    </ds_O4IfGyWw_ds_Ar545x9U_ds_ppZepetR_ds_OtOQdHQ1_ds_bdQk61HJ_ds_aIzq97Bb_ds_9Z9S6cka>
+  </dataSources>
+  <defaults>
+    <dataSources>
+      <ds.search>
+        <options>
+          <queryParameters>
+            <latest>$global_time.latest$</latest>
+            <earliest>$global_time.earliest$</earliest>
+          </queryParameters>
+        </options>
+      </ds.search>
+    </dataSources>
+  </defaults>
+  <inputs>
+    <input_global_trp>
+      <type>input.timerange</type>
+      <options>
+        <token>global_time</token>
+        <defaultValue>rt-15m,rt</defaultValue>
+      </options>
+      <title>Global Time Range</title>
+    </input_global_trp>
+    <input_abfpQxNq>
+      <options>
+        <items>
+          <label>All</label>
+          <value>*</value>
+        </items>
+        <defaultValue>*</defaultValue>
+        <token>dd_QCWXhrAh</token>
+      </options>
+      <encoding>
+        <label>primary[0]</label>
+        <value>primary[0]</value>
+      </encoding>
+      <dataSources>
+        <primary>ds_service</primary>
+      </dataSources>
+      <title>Services</title>
+      <type>input.dropdown</type>
+    </input_abfpQxNq>
+    <input_7pi2LJue>
+      <options>
+        <items>
+          <label>All</label>
+          <value>*</value>
+        </items>
+        <defaultValue>*</defaultValue>
+        <token>dd_mvEuUmm2</token>
+      </options>
+      <encoding>
+        <label>primary[0]</label>
+        <value>primary[0]</value>
+      </encoding>
+      <dataSources>
+        <primary>ds_route</primary>
+      </dataSources>
+      <title>Routes</title>
+      <type>input.dropdown</type>
+    </input_7pi2LJue>
+    <input_0368WJQ2>
+      <options>
+        <items>
+          <label>All</label>
+          <value>*</value>
+        </items>
+        <defaultValue>*</defaultValue>
+        <token>dd_iWUSuLMi</token>
+      </options>
+      <encoding>
+        <label>primary[0]</label>
+        <value>primary[0]</value>
+      </encoding>
+      <dataSources>
+        <primary>ds_consumer</primary>
+      </dataSources>
+      <title>Consumers</title>
+      <type>input.dropdown</type>
+    </input_0368WJQ2>
+    <input_b21DZ2qp>
+      <options>
+        <items>
+          <label>All</label>
+          <value>*</value>
+        </items>
+        <defaultValue>*</defaultValue>
+        <token>dd_kBb0sFRk</token>
+      </options>
+      <encoding>
+        <label>primary[0]</label>
+        <value>primary[0]</value>
+      </encoding>
+      <dataSources>
+        <primary>ds_status</primary>
+      </dataSources>
+      <title>Status</title>
+      <type>input.dropdown</type>
+    </input_b21DZ2qp>
+  </inputs>
+  <layout>
+    <type>absolute</type>
+    <options>
+      <display>auto-scale</display>
+      <height>2700</height>
+      <width>1800</width>
+    </options>
+    <structure>
+      <item>viz_E1siOm7u</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>0</y>
+        <w>150</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_4uGtkiYk</item>
+      <type>block</type>
+      <position>
+        <x>150</x>
+        <y>0</y>
+        <w>240</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_YLyVnupD</item>
+      <type>block</type>
+      <position>
+        <x>390</x>
+        <y>0</y>
+        <w>1410</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_WLDfYhcB</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>150</y>
+        <w>210</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_xciV9XpT</item>
+      <type>block</type>
+      <position>
+        <x>190</x>
+        <y>300</y>
+        <w>200</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_qm4cXpPA</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>300</y>
+        <w>200</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_IshPoBuW</item>
+      <type>block</type>
+      <position>
+        <x>190</x>
+        <y>150</y>
+        <w>200</w>
+        <h>150</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_V6AbS0yz</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>450</y>
+        <w>910</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_eeWNbLsr</item>
+      <type>block</type>
+      <position>
+        <x>910</x>
+        <y>450</y>
+        <w>890</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_BousCbaM</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>900</y>
+        <w>910</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_3Wn7QdtB</item>
+      <type>block</type>
+      <position>
+        <x>910</x>
+        <y>900</y>
+        <w>890</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_2g94uT6L</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>1350</y>
+        <w>910</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_G7Fm5SaT</item>
+      <type>block</type>
+      <position>
+        <x>910</x>
+        <y>1350</y>
+        <w>890</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_xpSRXDVg</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>1800</y>
+        <w>910</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_0XwLfsQI</item>
+      <type>block</type>
+      <position>
+        <x>910</x>
+        <y>1800</y>
+        <w>890</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_1vkJJ01s</item>
+      <type>block</type>
+      <position>
+        <x>0</x>
+        <y>2250</y>
+        <w>910</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <structure>
+      <item>viz_rWEMVEGf</item>
+      <type>block</type>
+      <position>
+        <x>910</x>
+        <y>2250</y>
+        <w>890</w>
+        <h>450</h>
+      </position>
+    </structure>
+    <globalInputs>input_global_trp</globalInputs>
+    <globalInputs>input_abfpQxNq</globalInputs>
+    <globalInputs>input_7pi2LJue</globalInputs>
+    <globalInputs>input_0368WJQ2</globalInputs>
+    <globalInputs>input_b21DZ2qp</globalInputs>
+  </layout>

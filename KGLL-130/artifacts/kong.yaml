@@ -1,0 +1,45 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.org
+  name: httpbin
+  path: /anything
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - headers:
+      x-llm:
+      - llama2
+    https_redirect_status_code: 426
+    name: llama2-chat
+    path_handling: v0
+    paths:
+    - /chat
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - headers:
+      x-llm:
+      - openai
+    https_redirect_status_code: 426
+    name: oai-chat
+    path_handling: v0
+    paths:
+    - /chat
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

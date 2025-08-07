@@ -1,0 +1,22 @@
+# KIC Env Vars
+export KUBECONFIG="/home/ubuntu/.kube/config"
+# export KIND_HOST=$(http get 169.254.169.254/latest/meta-data/local-ipv4)
+export KONG_DEMO_PROXY=http://$FQDN:31112
+export KONG_PORTAL_API_URL=https://$FQDN:30444
+export KONG_PORTAL_GUI_HOST=$FQDN:30446
+export PROXY_URL=http://$FQDN:31112
+export KONG_PROXY_URI="https://$FQDN:30000"
+export KONG_PROXY_URL="http://$FQDN:30000"
+export KONG_PROXY_URI=http://$FQDN:30000
+export KONG_ADMIN_GUI_URL=https://$FQDN:30500
+export KONG_ADMIN_API_URI=$FQDN:30501
+export KONG_ADMIN_API_URL=https://$FQDN:30501
+export KEYCLOAK_REDIRECT_URI="http://$FQDN:30000/oidc"
+export GRAFANA_DASHBOARD=http://$FQDN:30004
+export GRAFANA_HOSTNAME=${FQDN}
+export GRAFANA_URI=${GRAFANA_HOSTNAME}
+export GRAFANA_URL="http://${GRAFANA_HOSTNAME}:30005"
+export PROMETHEUS_HOSTNAME=${FQDN}
+export PROMETHEUS_URI=${PROMETHEUS_HOSTNAME}
+export PROMETHEUS_URL="http://${PROMETHEUS_HOSTNAME}:30006"
+# 
