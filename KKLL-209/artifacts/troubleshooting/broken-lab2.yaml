@@ -1,0 +1,116 @@
+_format_version: "3.0"
+services:
+- connect_timeout: 60000
+  host: mockbin
+  name: mockbin
+  path: /request
+  port: 8080
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - headers:
+      X-with-ID:
+      - "TRUE"
+    https_redirect_status_code: 426
+    name: correlation
+    path_handling: v0
+    paths:
+    - /mockbin
+    plugins:
+    - config:
+        echo_downstream: false
+        generator: tracker
+        header_name: X-Correlation-ID
+      enabled: true
+      name: correlation-id
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    - config:
+        add:
+          body: []
+          headers:
+          - X-MyCustom-Header:true
+          querystring: []
+        append:
+          body: []
+          headers: []
+          querystring: []
+        http_method: null
+        remove:
+          body: []
+          headers: []
+          querystring: []
+        rename:
+          body: []
+          headers: []
+          querystring: []
+        replace:
+          body: []
+          headers: []
+          querystring: []
+          uri: null
+      enabled: true
+      name: request-transformer
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - https_redirect_status_code: 426
+    name: nocorrelation
+    path_handling: v0
+    paths:
+    - /mockbin
+    plugins:
+    - config:
+        add:
+          body: []
+          headers:
+          - X-MyCustom-Header:true
+          querystring: []
+        append:
+          body: []
+          headers: []
+          querystring: []
+        http_method: null
+        remove:
+          body: []
+          headers: []
+          querystring: []
+        rename:
+          body: []
+          headers: []
+          querystring: []
+        replace:
+          body: []
+          headers: []
+          querystring: []
+          uri: null
+      enabled: true
+      name: request-transformer
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
