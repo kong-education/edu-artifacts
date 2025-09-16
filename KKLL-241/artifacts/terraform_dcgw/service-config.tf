@@ -7,6 +7,7 @@ resource "konnect_gateway_service" "httpbin" {
   control_plane_id = konnect_gateway_control_plane.global_control_plane.id
 }
 
+
 resource "konnect_gateway_route" "anything" {
   methods = ["GET"]
   name    = "Anything"
