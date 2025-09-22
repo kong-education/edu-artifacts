@@ -1,4 +1,4 @@
-resource "konnect_gateway_service" "httpbin" {
+/*resource "konnect_gateway_service" "httpbin" {
   name             = "HTTPBin"
   protocol         = "https"
   host             = "httpbin.konghq.com"
@@ -6,7 +6,6 @@ resource "konnect_gateway_service" "httpbin" {
   path             = "/"
   control_plane_id = konnect_gateway_control_plane.global_control_plane.id
 }
-
 
 resource "konnect_gateway_route" "anything" {
   methods = ["GET"]
@@ -32,4 +31,4 @@ resource "konnect_gateway_plugin_rate_limiting" "my_rate_limiting_plugin" {
   route = {
     id = konnect_gateway_route.anything.id
   }
-}
+}*/

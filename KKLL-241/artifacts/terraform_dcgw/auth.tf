@@ -7,6 +7,6 @@ terraform {
 }
 
 provider "konnect" {
-  personal_access_token = "kpat_LYZoGuHclcigCbeAWwV5fDNnUrofG8qnF6QIOhmxE8GAdXhRp"
+  personal_access_token = ""
   server_url            = "https://us.api.konghq.com"
 }
