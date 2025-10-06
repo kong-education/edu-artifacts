@@ -7,8 +7,6 @@ resource "konnect_gateway_control_plane" "global_control_plane" {
   proxy_urls    = []
 }
 
-
-
 resource "konnect_cloud_gateway_configuration" "global_gateway_config" {
   api_access        = "private+public"
   control_plane_geo = "us"
@@ -28,5 +26,6 @@ resource "konnect_cloud_gateway_configuration" "global_gateway_config" {
       cloud_gateway_network_id = "00dbb722-3b9f-4fa1-8177-5073d4b2950a" 
     }    
   ]
-  version = "3.9"
+
+  version = "3.11"
 }
