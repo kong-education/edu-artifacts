@@ -1,7 +1,7 @@
 controller:
   image:
     repository: kong/kubernetes-ingress-controller
-    tag: "3.4"
+    tag: "3.10"
   proxy:
     enabled: true
 
@@ -22,7 +22,7 @@ controller:
 gateway:
   image:
     repository: kong/kong-gateway
-    tag: "3.4"
+    tag: "3.10"
 
   env:
     database: "off"
