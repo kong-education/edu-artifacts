@@ -8,7 +8,7 @@ servers:
     description: Kong Air upstream API
 x-kong-name: kong-air-flights
 x-kong-tags:
-  - kgll-115
+  - KGLL-115
 security:
   - ApiKeyAuth: []
 paths:
