@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 # install-deck.sh: install the latest decK release (KGLL-115, Lesson 1.3).
 #
-# Works on Linux (amd64, arm64), macOS (Intel and Apple silicon), and
-# Windows through WSL. Needs curl, jq, and tar.
+# macOS:      brew install kong/deck/deck (Homebrew manages updates).
+#             Without Homebrew, falls back to the release archive below.
+# Linux/WSL:  the official release archive from GitHub (amd64, arm64).
+#             Needs curl, jq, and tar.
 #
 # Usage:  curl -fsSL <url>/install-deck.sh | bash
 #    or:  bash install-deck.sh
-# Option: INSTALL_DIR=/some/dir (default /usr/local/bin)
+# Option: INSTALL_DIR=/some/dir (archive installs only; default /usr/local/bin)
 #
 # Everything runs inside main(), called on the last line, so a partly
 # downloaded script piped into bash does nothing.
 set -euo pipefail
 
-main() {
+install_with_brew() {
+  echo "Installing decK with Homebrew"
+  brew install kong/deck/deck
+  echo "Installed: $(deck version)"
+}
+
+install_from_archive() {
+  local OS=$1 ARCH=$2
   local INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
-  local OS ARCH URL tool   # TMP stays global: the EXIT trap runs after main returns
+  local URL tool   # TMP stays global: the EXIT trap runs after main returns
 
   for tool in curl jq tar; do
     if ! command -v "$tool" >/dev/null 2>&1; then
@@ -22,21 +31,6 @@ main() {
       exit 1
     fi
   done
-
-  OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-  case "$OS" in
-    linux)
-      case "$(uname -m)" in
-        x86_64|amd64)  ARCH=amd64 ;;
-        aarch64|arm64) ARCH=arm64 ;;
-        *) echo "Unsupported CPU: $(uname -m)" >&2; exit 1 ;;
-      esac ;;
-    darwin)
-      ARCH=all ;;   # decK ships one universal build for macOS
-    *)
-      echo "Unsupported system: $OS. On Windows, run this inside WSL (Lesson 1.1)." >&2
-      exit 1 ;;
-  esac
 
   URL=$(curl -fsSL https://api.github.com/repos/kong/deck/releases/latest |
     jq -r --arg suffix "${OS}_${ARCH}.tar.gz" \
@@ -65,6 +59,29 @@ main() {
   esac
 
   echo "Installed: $("$INSTALL_DIR/deck" version)"
+}
+
+main() {
+  local OS
+  OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+  case "$OS" in
+    darwin)
+      if command -v brew >/dev/null 2>&1; then
+        install_with_brew
+      else
+        echo "Homebrew not found: installing from the release archive instead"
+        install_from_archive darwin all   # decK ships one universal macOS build
+      fi ;;
+    linux)
+      case "$(uname -m)" in
+        x86_64|amd64)  install_from_archive linux amd64 ;;
+        aarch64|arm64) install_from_archive linux arm64 ;;
+        *) echo "Unsupported CPU: $(uname -m)" >&2; exit 1 ;;
+      esac ;;
+    *)
+      echo "Unsupported system: $OS. On Windows, run this inside WSL (Lesson 1.1)." >&2
+      exit 1 ;;
+  esac
 }
 
 main "$@"
