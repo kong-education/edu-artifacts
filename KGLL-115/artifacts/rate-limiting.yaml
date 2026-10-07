@@ -1,0 +1,7 @@
+_format_version: "3.0"
+plugins:
+  - name: rate-limiting
+    service: kong-air-flights
+    config:
+      minute: 5
+      policy: local

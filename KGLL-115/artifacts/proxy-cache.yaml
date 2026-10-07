@@ -1,0 +1,10 @@
+_format_version: "3.0"
+plugins:
+  - name: proxy-cache
+    service: kong-air-flights
+    config:
+      strategy: memory
+      cache_ttl: 30
+      content_type:
+        - application/json
+        - application/json; charset=UTF-8

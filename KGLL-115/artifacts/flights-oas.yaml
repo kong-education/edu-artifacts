@@ -1,0 +1,53 @@
+openapi: 3.0.3
+info:
+  title: Kong Air Flights API
+  description: Kong Air Flights service, used in the KGLL-115 course.
+  version: 1.0.0
+servers:
+  - url: https://api.kong-air.com
+    description: Kong Air upstream API
+x-kong-name: kong-air-flights
+x-kong-tags:
+  - kgll-115
+security:
+  - ApiKeyAuth: []
+paths:
+  /flights:
+    get:
+      operationId: get-flights
+      summary: List flights
+      description: Returns scheduled Kong Air flights.
+      tags:
+        - Flights
+      responses:
+        "200":
+          description: Flights returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flight"
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apikey
+  schemas:
+    Flight:
+      type: object
+      required: [number, route_id, scheduled_departure, scheduled_arrival]
+      properties:
+        number:
+          type: string
+          example: KA0284
+        route_id:
+          type: string
+          example: LHR-JFK
+        scheduled_departure:
+          type: string
+          format: date-time
+        scheduled_arrival:
+          type: string
+          format: date-time

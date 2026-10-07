@@ -1,0 +1,11 @@
+_format_version: "3.0"
+plugins:
+  - name: key-auth
+    service: kong-air-flights
+    config:
+      key_names:
+        - apikey
+consumers:
+  - username: demo_user
+    keyauth_credentials:
+      - key: kong-training-key

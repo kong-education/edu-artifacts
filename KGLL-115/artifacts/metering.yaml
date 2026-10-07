@@ -1,0 +1,11 @@
+_format_version: "3.0"
+plugins:
+  - name: metering-and-billing
+    service: kong-air-flights
+    config:
+      ingest_endpoint: ${{ env "DECK_METERING_ENDPOINT" }}
+      api_token: ${{ env "DECK_METERING_TOKEN" }}
+      meter_api_requests: true
+      meter_ai_token_usage: false
+      subject:
+        look_up_value_in: application

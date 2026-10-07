@@ -1,0 +1,9 @@
+_format_version: "3.0"
+services:
+  - name: kong-air-flights
+    url: https://api.kong-air.com
+    routes:
+      - name: get-flights
+        paths:
+          - /flights
+        strip_path: false

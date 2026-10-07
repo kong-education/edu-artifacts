@@ -1,0 +1,11 @@
+_format_version: "3.0"
+plugins:
+  - name: cors
+    service: kong-air-flights
+    config:
+      origins:
+        - "*"
+      headers:
+        - Accept
+        - Content-Type
+        - apikey
