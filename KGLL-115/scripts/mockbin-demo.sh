@@ -2,7 +2,8 @@
 # Pipeable demo of the routes mounted on mockbin.run.
 # Uses HTTPie when installed, otherwise curl. Exits if neither is present.
 # Linux, macOS, and WSL. Compatible with Bash 3.2.
-# Client calls read /dev/null so a `curl | bash` pipe is not consumed.
+# Client calls read /dev/null, and HTTPie is passed --ignore-stdin, so a
+# `curl | bash` pipe is not consumed or treated as a request body.
 set -u
 
 base="${MOCKBIN_BASE:-https://mockbin.run}"
@@ -54,8 +55,8 @@ get_with() {
     show curl "${args[@]}" "$url"
     curl "${args[@]}" "$url" </dev/null
   else
-    show "$client" GET "$url" "$@"
-    "$client" GET "$url" "$@" </dev/null
+    show "$client" --ignore-stdin GET "$url" "$@"
+    "$client" --ignore-stdin GET "$url" "$@" </dev/null
   fi
   printf '\n'
 }
@@ -67,8 +68,8 @@ post_json() {
     show curl -sS -D- -X POST -H "Content-Type: application/json" -d "$body" "$url"
     curl -sS -D- -X POST -H "Content-Type: application/json" -d "$body" "$url" </dev/null
   else
-    show "$client" POST "$url" foo=bar
-    "$client" POST "$url" foo=bar </dev/null
+    show "$client" --ignore-stdin --raw "$body" POST "$url"
+    "$client" --ignore-stdin --raw "$body" POST "$url" </dev/null
   fi
   printf '\n'
 }
@@ -79,8 +80,8 @@ get_noredirect() {
     show curl -sS -D- --max-redirs 0 "$url"
     curl -sS -D- --max-redirs 0 "$url" </dev/null
   else
-    show "$client" --max-redirects=0 GET "$url"
-    "$client" --max-redirects=0 GET "$url" </dev/null
+    show "$client" --ignore-stdin --max-redirects=0 GET "$url"
+    "$client" --ignore-stdin --max-redirects=0 GET "$url" </dev/null
   fi
   printf '\n'
 }
