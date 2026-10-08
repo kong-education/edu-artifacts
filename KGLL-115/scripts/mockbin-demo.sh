@@ -2,6 +2,7 @@
 # Pipeable demo of the routes mounted on mockbin.run.
 # Uses HTTPie when installed, otherwise curl. Exits if neither is present.
 # Linux, macOS, and WSL. Compatible with Bash 3.2.
+# Client calls read /dev/null so a `curl | bash` pipe is not consumed.
 set -u
 
 base="${MOCKBIN_BASE:-https://mockbin.run}"
@@ -33,10 +34,10 @@ get() {
   url="$1"
   if [ "$client" = curl ]; then
     show curl -sS -D- "$url"
-    curl -sS -D- "$url"
+    curl -sS -D- "$url" </dev/null
   else
     show "$client" GET "$url"
-    "$client" GET "$url"
+    "$client" GET "$url" </dev/null
   fi
   printf '\n'
 }
@@ -51,10 +52,10 @@ get_with() {
       shift
     done
     show curl "${args[@]}" "$url"
-    curl "${args[@]}" "$url"
+    curl "${args[@]}" "$url" </dev/null
   else
     show "$client" GET "$url" "$@"
-    "$client" GET "$url" "$@"
+    "$client" GET "$url" "$@" </dev/null
   fi
   printf '\n'
 }
@@ -64,10 +65,10 @@ post_json() {
   body="$2"
   if [ "$client" = curl ]; then
     show curl -sS -D- -X POST -H "Content-Type: application/json" -d "$body" "$url"
-    curl -sS -D- -X POST -H "Content-Type: application/json" -d "$body" "$url"
+    curl -sS -D- -X POST -H "Content-Type: application/json" -d "$body" "$url" </dev/null
   else
     show "$client" POST "$url" foo=bar
-    "$client" POST "$url" foo=bar
+    "$client" POST "$url" foo=bar </dev/null
   fi
   printf '\n'
 }
@@ -76,10 +77,10 @@ get_noredirect() {
   url="$1"
   if [ "$client" = curl ]; then
     show curl -sS -D- --max-redirs 0 "$url"
-    curl -sS -D- --max-redirs 0 "$url"
+    curl -sS -D- --max-redirs 0 "$url" </dev/null
   else
     show "$client" --max-redirects=0 GET "$url"
-    "$client" --max-redirects=0 GET "$url"
+    "$client" --max-redirects=0 GET "$url" </dev/null
   fi
   printf '\n'
 }
@@ -130,7 +131,7 @@ get "$base/stream/3"
 section "Forced gzip"
 if [ "$client" = curl ]; then
   show curl -sS -D- --compressed "$base/gzip"
-  curl -sS -D- --compressed "$base/gzip"
+  curl -sS -D- --compressed "$base/gzip" </dev/null
   printf '\n'
 else
   get "$base/gzip"
