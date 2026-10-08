@@ -36,8 +36,8 @@ get() {
     show curl -sS -D- "$url"
     curl -sS -D- "$url" </dev/null
   else
-    show "$client" GET "$url"
-    "$client" GET "$url" </dev/null
+    show "$client" --ignore-stdin GET "$url"
+    "$client" --ignore-stdin GET "$url" </dev/null
   fi
   printf '\n'
 }
